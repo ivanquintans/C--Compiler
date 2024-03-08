@@ -7,7 +7,7 @@
 void inicializar();
 
 // funcion que comprueba que esta en la tabla de simbolos
-bool estaEnTS();
+void estaEnTS();
 
 // funciona que libera la memoria de manera adeduaca al finalizar la tabla de simbolos
 void finalizarTS();

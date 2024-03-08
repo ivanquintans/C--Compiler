@@ -15,7 +15,8 @@ int main(int argc, char **argv)
   }
 
   //inicializamos el sistema de entrada
-  iniciarSistemaEntrada();
+  iniciarSistemaEntrada(argv[1]);
+  inicializarSintactico();
 
 
   exit(0);

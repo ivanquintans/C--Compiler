@@ -3,6 +3,6 @@
 
 
 // funcion que inicializa el analizador sintactico
-void inicializarSintactico(char *fichero);
+void inicializarSintactico();
 
 #endif

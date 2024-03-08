@@ -10,6 +10,7 @@ char caracter_actual;
 
 void iniciarSistemaEntrada(char *fichero)
 {
+  printf(fichero);
   archivo = fopen(fichero, "r");
 
   // comprobamos que este se abre de forma correcta
@@ -28,9 +29,9 @@ void finalizarSistemaEntrada(){
 char sigCaracter(){
   // Lee un caracter del archivo
   caracter_actual = fgetc(archivo);
-  if (caracter_actual == NULL){
-    printf("Error al leer el caracter\n");
-  }else{
+  //if (caracter_actual == NULL){
+   // printf("Error al leer el caracter\n");
+  //}else{
     return caracter_actual;
-  }
+ // }
 }

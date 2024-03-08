@@ -7,13 +7,20 @@
 #include "TS.h"
 
 char caracter = ' ';
+compLexico comp = {0, NULL};
 
 //Funciones para los autómatas que reconocen cada tipo
 
 // Función auxiliar correspondente ao AF de cadeas alfanuméricas
-void _alfanumerico() {
+char _alfanumerico() {
   
   caracter=sigCaracter();
-  printf(caracter);
+  //printf(caracter);
     
+}
+
+//funcion que devuelve al sintactico el siguiente componente lexico 
+char sigCompLexico(){
+  return(_alfanumerico());
+  
 }

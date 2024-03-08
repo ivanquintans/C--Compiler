@@ -4,19 +4,25 @@
 #include  "lexico.h"
 
 
-// Función que invoca ao analizador sintáctico
-void inicializarSintactico(char *nomeFicheiro) {
+// funcion que inicializa el analizador sintactico
+void inicializarSintactico() {
     compLexico comp;
+    char caracter =' ';
 
-    iniciarAnalizadorLexico(nomeFicheiro);
+    for (int i=0; i<10; i++){
+      printf("\n");
+      caracter = sigCompLexico();
+      printf("Caracter leido: %c\n", caracter);
+    }
 
-    printf("----- INICIO DA ANÁLISE -----\n");
-    while ((comp = segCompLexico()).comp_lexico != EOF) {
-        if (comp.lexema != NULL) { // Realízase esta comprobación xa que en caso de erro o lexema será NULL
-            printf("< %d, %s >\n", comp.comp_lexico, comp.lexema);
+  
+    /*while ((comp = segCompLexico()).codigo != EOF) {
+        if (comp.lexema != NULL) { 
+            printf("< %d, %s >\n", comp.codigo, comp.lexema);
         }
     }
-    printf("-----  FIN DA ANÁLISE   -----\n");
+    */
+    
 
-    finalizarAnalizadorLexico();
+    //finalizarAnalizadorLexico();
 }

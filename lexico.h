@@ -9,9 +9,9 @@ typedef struct
 } compLexico;
 
 // Función que inicia o analizador léxico
-void iniciarAnalizadorLexico(char *nomeFicheiro);
+void iniciarAnalizadorLexico();
 
 // Función que le o seguinte compoñente léxico do código fonte
-compLexico segCompLexico();
+char sigCompLexico();
 
 #endif

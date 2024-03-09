@@ -8,8 +8,7 @@ char caracter_actual;
 
 // funcion que inicializa el sistema de entrada
 
-void iniciarSistemaEntrada(char *fichero)
-{
+void iniciarSistemaEntrada(char *fichero){
   printf(fichero);
   archivo = fopen(fichero, "r");
 
@@ -18,6 +17,7 @@ void iniciarSistemaEntrada(char *fichero)
     printf("Error a  la hora de abrir er archivo\n");
     exit(EXIT_FAILURE);
   }
+  //dejamos el fichero abierto
 }
 
 // funcion que se encarga de cerrar el archivo
@@ -27,6 +27,7 @@ void finalizarSistemaEntrada(){
 
 // funcion que se encarga de enviar un caracter al analizadorlexico
 char sigCaracter(){
+  //TODO: Esto hay que cambiarlo ya que luego se emplea el doble buffer
   // Lee un caracter del archivo
   caracter_actual = fgetc(archivo);
   //if (caracter_actual == NULL){

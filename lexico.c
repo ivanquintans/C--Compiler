@@ -33,34 +33,66 @@ char _numerico() {
     -integer literal
     -floating point literals 
     -imaginary
+
+    89789.
   */
 
-  if (isdigit(caracter)){
-    estado_num = 0; //mientras sea carcacter no hay problema
-  } else estado_num = 1;
-
-  switch (estado_num){
-
-    case 0: //sigue siendo un numero
-
-      caracter = sigCaracter();
-
-      break;
-    
-    case 1:
-
-
-    default:
-
-      break;
-
+  //en primer lugar vamos a separar los caracteres de incio 
+  if (caracter == 0){
+    estado_num = 1;
+  }else if (caracter =='.'){
+    estado_num =2;
+  }else {
+    estado_num =0;
   }
 
-  
+  do {
+    caracter = sigCaracter();
+    switch (estado_num){
+
+      case 0: //sigue siendo un numero
+        if(!isdigit(caracter)){ //redirecion de tipo
+
+          switch (caracter){
+
+            case '.':
+              estado_num=2
+              break;
+            
 
 
+            default:
+
+
+              break;
+          }
+        
+      
+        }
+
+      
+        break;
+      
+      case 1: //redirecion de tipo
+
+      //TODO: TENER CUIDADO CON LO HEX
+          if (caracter == 'b' || caracter == 'B' || caracter == 'X' || caracter == 'x' || caracter == 'o' || caracter == 'O'){
+            estado_num = 2;
+          }else if (caracter ==' '){
+
+          }
+
+      
+
+
+
+      default:
+
+        break;
+    }
+
+  }while (caracter != EOF && aceptado==0 );
   
-    
 }
 
 char _otroTipo(char caracter){
@@ -91,11 +123,10 @@ char sigCompLexico(){
           return caracter;
         }
         
-        
-      
         break;
     
       default:
+
         break;
     }
     

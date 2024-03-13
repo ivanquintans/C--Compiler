@@ -56,7 +56,7 @@ char _numerico() {
           switch (caracter){
 
             case '.':
-              estado_num=2
+              estado_num=2;
               break;
             
 

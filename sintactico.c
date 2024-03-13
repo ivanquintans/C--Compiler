@@ -9,14 +9,18 @@ void inicializarSintactico() {
     compLexico comp;
     char caracter =' ';
 
+    /*
+
     for (int i=0; i<100; i++){
       caracter = sigCompLexico();
-      //TODO: CAMBIAR ESTE IF
       if (caracter != '\n'){
         printf("Caracter leido: %c\n", caracter);
       }
       
     }
+
+
+    */
 
   
     /*while ((comp = segCompLexico()).codigo != EOF) {

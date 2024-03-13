@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "sistemaEntrada.h"
+#include "lexico.h"
 #define TAM 16
 FILE *archivo;
 char caracter_actual;
@@ -130,6 +131,36 @@ void retroceder(){
     miBuffer.delantero-=1; //tal y como esta implementando nunca va a ser cero por lo que no da problemas
 }
 
-void aceptarLexema(){
+void aceptarLexema(compLexico *compActual){
+
+    int tamLexema;
+
+    //varios casos posibles
+
+    //En caso de que el inicio y el fin esten en a o en b
+    if( miBuffer.delantero < TAM && miBuffer.inicio < TAM || miBuffer.delantero > TAM && miBuffer.inicio > TAM){
+        tamLexema = miBuffer.delantero - miBuffer.inicio;
+        compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
+
+        //hacemos la copia en el lexema del buffer que queremos
+        //mas la posición inicio para asi empezar desde donde queremos
+
+        if (miBuffer.current == 0){
+            strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema);
+            compActual->lexema[-1] = '/0'; //evitar errores
+        }else {
+            strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio, tamLexema);
+            compActual->lexema[-1] = '/0'; //evitar errores
+        }
+    //Inicio en A y delantero en B
+    }else if(miBuffer.inicio < TAM && miBuffer.delantero > TAM){
     
+    //Inicio en B y delantero en A
+    }else if(miBuffer.inicio > TAM && miBuffer.delantero < TAM){
+
+    }
+
+
+
+
 }

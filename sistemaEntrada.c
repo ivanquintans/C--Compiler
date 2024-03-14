@@ -9,8 +9,8 @@ FILE *archivo;
 char caracter_actual;
 
 typedef struct {
-    char A [TAM +1];
-    char B [TAM +1];
+    char A [TAM];
+    char B [TAM];
     int inicio;
     int delantero;
     int current; //Si 0 A sino B
@@ -31,17 +31,17 @@ void cargarBloque(){
     
     if (miBuffer.current == 0){
          //si estamos en el bloque A
-        fread(miBuffer.A,sizeof(char),TAM,archivo);
+        fread(miBuffer.A,sizeof(char),TAM-1,archivo);
         //ahora añadimos el EOF
-        miBuffer.A[-1] = '/0';
+        miBuffer.A[TAM -1] = '\0';
 
-        for(int i=0;i<TAM+1;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        for(int i=0;i<TAM;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
-        fread(miBuffer.B,sizeof(char),TAM,archivo);
+        fread(miBuffer.B,sizeof(char),TAM-1,archivo);
         //ahora añadimos el EOF
-        miBuffer.B[-1] = '/0';
-        for(int i=0;i<TAM+1;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        miBuffer.B[TAM -1] = '\0';
+        for(int i=0;i<TAM;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
 
   }
   
@@ -54,7 +54,7 @@ void alternarBloque(){
     if (miBuffer.current==0){
         miBuffer.current=1;
     }else{
-        miBuffer.current==1;
+        miBuffer.current=1;
         miBuffer.delantero=0; //Devolvemos el puntero delantero al inicio del primer buffer
     } 
 
@@ -92,7 +92,7 @@ char sigCaracter(){
         caracter_actual = miBuffer.A[miBuffer.delantero];
 
         if (!feof(archivo)){ //Si no se llego al fin de fichero
-            if (caracter_actual!= '/0'){ //si 
+            if (caracter_actual!= '\0'){ //si 
                 miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
@@ -111,7 +111,7 @@ char sigCaracter(){
         caracter_actual = miBuffer.B[miBuffer.delantero];
 
         if (!feof(archivo)){ //Si no se llego al fin de fichero
-            if (caracter_actual!= '/0'){ //si 
+            if (caracter_actual!= '\0'){ //si 
                 miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
@@ -138,7 +138,7 @@ void aceptarLexema(compLexico *compActual){
     //varios casos posibles
 
     //En caso de que el inicio y el fin esten en a o en b
-    if( miBuffer.delantero < TAM && miBuffer.inicio < TAM || miBuffer.delantero > TAM && miBuffer.inicio > TAM){
+    if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
         tamLexema = miBuffer.delantero - miBuffer.inicio;
         compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
 
@@ -146,21 +146,40 @@ void aceptarLexema(compLexico *compActual){
         //mas la posición inicio para asi empezar desde donde queremos
 
         if (miBuffer.current == 0){
-            strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema);
-            compActual->lexema[-1] = '/0'; //evitar errores
+            strncpy(compActual->lexema, miBuffer.A[miBuffer.inicio], tamLexema);
+            compActual->lexema[TAM -1] = '\0'; //evitar errores
         }else {
-            strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio, tamLexema);
-            compActual->lexema[-1] = '/0'; //evitar errores
+            strncpy(compActual->lexema, miBuffer.B[miBuffer.inicio], tamLexema);
+            compActual->lexema[TAM -1] = '\0'; //evitar errores
         }
     //Inicio en A y delantero en B
-    }else if(miBuffer.inicio < TAM && miBuffer.delantero > TAM){
-    
+    }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
+
+        tamLexema = miBuffer.delantero - miBuffer.inicio;
+        compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+
+        //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
+        int tamPrimeraparte = ((tamLexema -1) - miBuffer.inicio);
+
+        strncpy(compActual->lexema,miBuffer.A[miBuffer.inicio], tamPrimeraparte);
+        //copiamos la parte del bloque B
+        strncpy(compActual->lexema + tamPrimeraparte,miBuffer.B, miBuffer.delantero - (TAM-1)); //le restamos al delantero la parte del buffer A
+        //se mete el '\0'
+        compActual->lexema[miBuffer.delantero] = '\0';
+
     //Inicio en B y delantero en A
-    }else if(miBuffer.inicio > TAM && miBuffer.delantero < TAM){
+    }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
+
+        tamLexema = 2*TAM - miBuffer.delantero + miBuffer.inicio;
+
+         int tamPrimeraparte = (tamLexema -1) - (miBuffer.inicio - TAM);
+
+        //copiamos la parte del lexema del bloque B
+        strncpy(compActual->lexema,miBuffer.B[(miBuffer.inicio - TAM)],tamPrimeraparte); //el numero a copiar es el tamaño de lexema -1 menos la posicón del buffer B
+        //copiamos la parte del bloque A
+        strncpy(compActual->lexema + tamPrimeraparte, miBuffer.A, miBuffer.delantero +1 );
+        //se mete el '\0'
+        compActual->lexema[tamPrimeraparte + miBuffer.delantero+1] = '\0';
 
     }
-
-
-
-
 }

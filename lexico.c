@@ -95,18 +95,18 @@ char _numerico() {
   
 }
 
-char _otroTipo(char caracter){
-  return caracter;
-}
-
 //funcion que devuelve al sintactico el siguiente componente lexico 
-//TODO: TOCA PONERSE CON LA CARNITA ASADA
+
 char sigCompLexico(){
-  //return(_alfanumerico());
+  //
   int estado =0;
 
-  do{
+  //do{
+   
     caracter = sigCaracter();
+        
+
+    /*
     
     //hacemos un switch por el estado 
     switch (estado){
@@ -119,8 +119,8 @@ char sigCompLexico(){
         }else if (isalpha(caracter) || caracter == '_'){
           _alfanumerico();
         }else{
-          caracter = _otroTipo(caracter);
-          return caracter;
+            switch (caracter)
+          
         }
         
         break;
@@ -131,6 +131,9 @@ char sigCompLexico(){
     }
     
   } while (caracter != EOF && aceptado==0);
+
+
+  */
   
   
 }

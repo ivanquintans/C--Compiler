@@ -9,8 +9,6 @@ void inicializarSintactico() {
     compLexico comp;
     char caracter =' ';
 
-    /*
-
     for (int i=0; i<100; i++){
       caracter = sigCompLexico();
       if (caracter != '\n'){
@@ -19,8 +17,7 @@ void inicializarSintactico() {
       
     }
 
-
-    */
+    
 
   
     /*while ((comp = segCompLexico()).codigo != EOF) {

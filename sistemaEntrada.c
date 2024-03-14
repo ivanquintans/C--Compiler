@@ -35,13 +35,13 @@ void cargarBloque(){
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
 
-        for(int i=0;i<TAM;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
         fread(miBuffer.B,sizeof(char),TAM-1,archivo);
         //ahora añadimos el EOF
         miBuffer.B[TAM -1] = '\0';
-        for(int i=0;i<TAM;i++) printf("Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
 
   }
   
@@ -51,10 +51,10 @@ void cargarBloque(){
 
 void alternarBloque(){
 
-    if (miBuffer.current==0){
+    if (miBuffer.current==0){ //Si es a
         miBuffer.current=1;
     }else{
-        miBuffer.current=1;
+        miBuffer.current=0;
         miBuffer.delantero=0; //Devolvemos el puntero delantero al inicio del primer buffer
     } 
 
@@ -87,6 +87,7 @@ void finalizarSistemaEntrada(){
 // funcion que se encarga de enviar un caracter al analizadorlexico
 char sigCaracter(){
     //debemos de diferenciar si estamos en el buffer a o en el b
+    printf("Delantero esta en %d\n",miBuffer.delantero);
     if (miBuffer.current==0){//A
 
         caracter_actual = miBuffer.A[miBuffer.delantero];
@@ -100,6 +101,7 @@ char sigCaracter(){
                 cargarBloque();
                 //retornamos null en caso de ser el eof ya que no lo quiero procesar
                 return caracter_actual;
+                
             }
 
         }else{
@@ -108,7 +110,7 @@ char sigCaracter(){
         }
 
     }else{
-        caracter_actual = miBuffer.B[miBuffer.delantero];
+        caracter_actual = miBuffer.B[miBuffer.delantero - (TAM)]; //sirve para modular el segundo buffer
 
         if (!feof(archivo)){ //Si no se llego al fin de fichero
             if (caracter_actual!= '\0'){ //si 

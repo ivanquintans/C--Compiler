@@ -50,7 +50,7 @@ void destruirAbb(TABB *A) {
     if (*A != NULL) {
         destruirAbb(&(*A)->izq);
         destruirAbb(&(*A)->der);
-        _destruir_elem(&((*A)->info));
+        free(((*A)->info.lexema));
         free(*A);
         *A = NULL;
     }
@@ -135,6 +135,16 @@ void insertarElementoAbb(TABB *A, TIPOELEMENTO E) {
         insertarElementoAbb(&(*A)->der, E);
     } else {
         insertarElementoAbb(&(*A)->izq, E);
+    }
+}
+
+void inorden(TABB A){
+    TIPOELEMENTO E;
+    if(!esAbbVacio(A)){
+        inorden(izqAbb(A));
+        leerElementoAbb(A,&E);
+        printf("< %d , %s >\n",E.codigo, E.lexema);
+        inorden(derAbb(A));
     }
 }
 

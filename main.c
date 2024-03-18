@@ -3,6 +3,7 @@
 
 #include "sintactico.h"
 #include "sistemaEntrada.h"
+#include "TS.h"
 
 int main(int argc, char **argv)
 {
@@ -14,9 +15,14 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
+   //inicializamos la tabla de simbolos
+   inicializarTablaSimbolos();
+
   //inicializamos el sistema de entrada
-  iniciarSistemaEntrada(argv[1]);
-  inicializarSintactico();
+  //iniciarSistemaEntrada(argv[1]);
+  //Inicializamos el sintactico
+  //inicializarSintactico();
+ 
 
 
   exit(0);

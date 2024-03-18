@@ -76,5 +76,13 @@ void buscarNodoAbb(TABB A, TIPOCLAVE cl, TIPOELEMENTO *nodo);
  */
 void insertarElementoAbb(TABB *A, TIPOELEMENTO E);
 
+//FUNCIONES DE IMPRIMIR
+/**
+ * IMPRIME EL CONTENIDO DEL ARBOL
+ * @param A Arbol binario
+ *  
+ * */
+void inorden(TABB A);
+
 
 #endif	// ABB_H

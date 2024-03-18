@@ -2,8 +2,7 @@
 #define LEXICO_H
 
 #include "definiciones.h"
-typedef struct
-{
+typedef struct{
   int codigo;
   char *lexema;
 } compLexico;

@@ -3,40 +3,37 @@
 #include <stdlib.h>
 #include "string.h"
 
+#include "definiciones.h"
+
+/* Se empleo el arbol binario de busqueda proporcionado por Maria Jose en la 
+asignatura de algoritmos
+Sin embargo se realizo un pequeño ajuste sobre este cambiando lo 
+necesario para poder implementarlo en la tabla de simbolos*/
+
 ///////////////////////// ESTRUCTURAS DE DATOS
 
 struct celda {
-    TIPOELEMENTOABB info;
+    TIPOELEMENTO info;
     struct celda *izq, *der;
 };
 
 //////////////////////// FUNCIONES
 
 
-/////////////////////////////////////////////////////////////
-/////////////////////////// INICIO PARTE MODIFICABLE
-
 /*Extraer la clave de una celda */ //Si la clave es orden alfabético
-TIPOCLAVE _clave_elem(TIPOELEMENTOABB *E) {
-    return E->ApellidosNombre;
+TIPOCLAVE _clave_elem(TIPOELEMENTO *E) {
+    return E->lexema;
 }
 
 /* Esta funcion puente nos permite modificar el tipo de
- * de datos del TAD sin tener que cambiar todas las 
- * comparaciones del resto de la biblioteca y en su lugar
- * cambiando solo esta. */
+ de datos del TAD sin tener que cambiar todas las 
+ comparaciones del resto de la biblioteca y en su lugar
+ cambiando solo esta. */
+
 int _comparar_claves(TIPOCLAVE cl1, TIPOCLAVE cl2) {
     if (strcmp(cl1,cl2)>0) return 1;
     else if (strcmp(cl1,cl2)<0) return -1;
     else return 0;
-    //return cl1==cl2 ? 0 : cl1>cl2 ? 1 : -1;
-}
-
-/* Si tipoelem tiene alguna estructura que necesite 
- * destruirse ha de hacerse aqui. El uso de esta funcion
- * permite hacer mas eficiente la destruccion del arbol.*/
-void _destruir_elem(TIPOELEMENTOABB *E) {
-    destruirLista(&E->listavacunas);
     
 }
 
@@ -73,12 +70,12 @@ TABB derAbb(TABB A) {
     return A->der;
 }
 
-void leerElementoAbb(TABB A, TIPOELEMENTOABB *E) {
+void leerElementoAbb(TABB A, TIPOELEMENTO *E) {
     *E = A->info;
 }
 // Función privada para comparar las claves
 
-int _comparar_clave_elem(TIPOCLAVE cl, TIPOELEMENTOABB E) {
+int _comparar_clave_elem(TIPOCLAVE cl, TIPOELEMENTO E) {
     return _comparar_claves(cl, _clave_elem(&E));
 }
 //Función privada para informar si una clave está en el árbol
@@ -101,11 +98,11 @@ unsigned _es_miembro_clave(TABB A, TIPOCLAVE cl) {
 
 //Funciones públicas
 
-unsigned esMiembroAbb(TABB A, TIPOELEMENTOABB E) {
+unsigned esMiembroAbb(TABB A, TIPOELEMENTO E) {
     return _es_miembro_clave(A, _clave_elem(&E));
 }
 
-void buscarNodoAbb(TABB A, TIPOCLAVE cl, TIPOELEMENTOABB *nodo) {
+void buscarNodoAbb(TABB A, TIPOCLAVE cl, TIPOELEMENTO *nodo) {
     if (esAbbVacio(A)) {
         return;
     }
@@ -124,7 +121,7 @@ void buscarNodoAbb(TABB A, TIPOCLAVE cl, TIPOELEMENTOABB *nodo) {
 /* Funcion recursiva para insertar un nuevo nodo 
    en el arbol. Se presupone que no existe un nodo
    con la misma clave en el arbol. */
-void insertarElementoAbb(TABB *A, TIPOELEMENTOABB E) {
+void insertarElementoAbb(TABB *A, TIPOELEMENTO E) {
     if (esAbbVacio(*A)) {
         *A = (TABB) malloc(sizeof (struct celda));
         (*A)->info = E;
@@ -140,74 +137,5 @@ void insertarElementoAbb(TABB *A, TIPOELEMENTOABB E) {
         insertarElementoAbb(&(*A)->izq, E);
     }
 }
-/* Funcion privada que devuelve mínimo de subárbol dcho */
-TIPOELEMENTOABB _suprimir_min(TABB * A) {//Se devuelve el elemento más a la izquierda
-    TABB aux;
-    TIPOELEMENTOABB ele;
-    if (esAbbVacio((*A)->izq)) {//Si izquierda vacía, se devuelve valor nodo actual A
-        ele = (*A)->info;
-        aux = *A;
-        *A = (*A)->der;
-        free(aux);
-        return ele;
-    } else {
-        return _suprimir_min(&(*A)->izq); //se vuelve a buscar mínimo rama izquierda
-    }
-}
-
-/* Funcion que permite eliminar un nodo del arbol */
-void suprimirElementoAbb(TABB *A, TIPOELEMENTOABB E) {
-    TABB aux;
-    if (esAbbVacio(*A)) {
-        return;
-    }
-
-    TIPOCLAVE cl = _clave_elem(&E);
-    int comp = _comparar_clave_elem(cl, (*A)->info);
-    if (comp < 0) { //if (E < (*A)->info) {
-        suprimirElementoAbb(&(*A)->izq, E);
-    } else if (comp > 0) { //(E > (*A)->info) {
-        suprimirElementoAbb(&(*A)->der, E);
-    } else if (esAbbVacio((*A)->izq) && esAbbVacio((*A)->der)) {
-        _destruir_elem(&((*A)->info));
-        free(*A);
-        *A = NULL;
-    } else if (esAbbVacio((*A)->izq)) { // pero no es vacio derecha
-        aux = *A;
-        *A = (*A)->der;
-        _destruir_elem(&aux->info);
-        free(aux);
-    } else if (esAbbVacio((*A)->der)) { //pero no es vacio izquierda
-        aux = *A;
-        *A = (*A)->izq;
-        _destruir_elem(&aux->info);
-        free(aux);
-    } else { //ni derecha ni izquierda esta vacio, busco mínimo subárbol derecho
-        _destruir_elem(&(*A)->info); //elimino la info pero no libero el nodo,
-        //pues en su sitio voy a poner el mínimo del subárbol derecho
-        (*A)->info = _suprimir_min(&(*A)->der);
-    }
-}
-
-/* Funcion privada para pasar la clave y no tener que
-   extraerla del nodo en las llamadas recursivas.*/
-void _modificar(TABB A, TIPOCLAVE cl, TIPOELEMENTOABB nodo) {
-    if (esAbbVacio(A)) {
-        return;
-    }
-    int comp = _comparar_clave_elem(cl, A->info);
-    if (comp == 0) {
-        A->info = nodo;
-    } else if (comp < 0) {
-        _modificar(A->izq, cl, nodo);
-    } else {
-        _modificar(A->der, cl, nodo);
-    }
-}
 
 
-/* Permite modificar el nodo extrayendo del mismo la clave */
-void modificarElementoAbb(TABB A, TIPOELEMENTOABB nodo) {
-    TIPOCLAVE cl = _clave_elem(&nodo);
-    _modificar(A, cl, nodo);
-}

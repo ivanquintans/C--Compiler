@@ -1,4 +1,4 @@
-rm #ifndef DEFINICIONES_H
+#ifndef DEFINICIONES_H
 #define DEFINICIONES_H
 
 
@@ -65,6 +65,10 @@ rm #ifndef DEFINICIONES_H
 #define MAYORMAYORIGUAL 356    //>>=
 #define MENORMENORIGUAL 357    //<<=
 #define ASTERISCOASTERISCOIGUAL 358     //**=
+
+
+
+#endif
 
 
 

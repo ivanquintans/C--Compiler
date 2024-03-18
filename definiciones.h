@@ -1,4 +1,4 @@
-#ifndef DEFINICIONES_H
+rm #ifndef DEFINICIONES_H
 #define DEFINICIONES_H
 
 

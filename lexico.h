@@ -14,4 +14,6 @@ void iniciarAnalizadorLexico();
 // Función que le o seguinte compoñente léxico do código fonte
 char sigCompLexico();
 
+
+
 #endif

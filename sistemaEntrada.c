@@ -36,7 +36,6 @@ void cargarBloque(){
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
         if ( (leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo))< TAM-1){
-            printf("El valor de leidos es %d\n",leidos);
             /*Si se cumple la condición añadimos el EOF en el buffer*/
             miBuffer.A[leidos] = EOF;
 
@@ -50,14 +49,14 @@ void cargarBloque(){
     }else{ //Si estamos en el bloque b
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
-        if ( (leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo)) < TAM-1){
-            printf("El valor de leidos es %d\n",leidos);
+        if ( (leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
             miBuffer.A[leidos] = EOF;
 
         }
         miBuffer.B[TAM -1] = '\0';
         for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
+
 
   }
   
@@ -106,18 +105,18 @@ void finalizarSistemaEntrada(){
 // funcion que se encarga de enviar un caracter al analizadorlexico
 char sigCaracter(){
     //debemos de diferenciar si estamos en el buffer a o en el b
-    printf("Delantero esta en %d\n",miBuffer.delantero);
+    //printf("Delantero esta en %d\n",miBuffer.delantero);
     if (miBuffer.current==0){//A
 
         caracter_actual = miBuffer.A[miBuffer.delantero];
-        printf("Voy a leer el caracter %c\n",caracter_actual);
+        //printf("Voy a leer el caracter %c\n",caracter_actual);
 
         /*Para comprobar si se llego al final del archivo vamos a comprobar 
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
         if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
             if (caracter_actual!= '\0'){ //si    
-                printf("Estoy aqui dentro\n");
+                //printf("Estoy aqui dentro\n");
                 miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer

@@ -28,18 +28,34 @@ void incializarBuffer(){
 //cargamos el primero de los bloques
 void cargarBloque(){
     //en funcion de cual sea el current cargamos el bloque a o el bloque b
+
+    int leidos; //variable que controla los bytes leidos por fread
     
     if (miBuffer.current == 0){
          //si estamos en el bloque A
-        fread(miBuffer.A,sizeof(char),TAM-1,archivo);
+
+        //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
+        if ( (leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo))< TAM-1){
+            printf("El valor de leidos es %d\n",leidos);
+            /*Si se cumple la condición añadimos el EOF en el buffer*/
+            miBuffer.A[leidos] = EOF;
+
+        }
+
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
 
         for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
-        fread(miBuffer.B,sizeof(char),TAM-1,archivo);
-        //ahora añadimos el EOF
+
+        //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
+        if ( (leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo)) < TAM-1){
+            printf("El valor de leidos es %d\n",leidos);
+            /*Si se cumple la condición añadimos el EOF en el buffer*/
+            miBuffer.A[leidos] = EOF;
+
+        }
         miBuffer.B[TAM -1] = '\0';
         for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
 
@@ -52,10 +68,13 @@ void cargarBloque(){
 void alternarBloque(){
 
     if (miBuffer.current==0){ //Si es a
+        printf("Estoy cambiando a B\n");
         miBuffer.current=1;
     }else{
         miBuffer.current=0;
-        miBuffer.delantero=0; //Devolvemos el puntero delantero al inicio del primer buffer
+        miBuffer.delantero=0;
+        printf("Estoy cambiando a A\n");
+         //Devolvemos el puntero delantero al inicio del primer buffer
     } 
 
 }
@@ -91,9 +110,14 @@ char sigCaracter(){
     if (miBuffer.current==0){//A
 
         caracter_actual = miBuffer.A[miBuffer.delantero];
+        printf("Voy a leer el caracter %c\n",caracter_actual);
 
-        if (!feof(archivo)){ //Si no se llego al fin de fichero
-            if (caracter_actual!= '\0'){ //si 
+        /*Para comprobar si se llego al final del archivo vamos a comprobar 
+        que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
+
+        if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
+            if (caracter_actual!= '\0'){ //si    
+                printf("Estoy aqui dentro\n");
                 miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
@@ -105,14 +129,19 @@ char sigCaracter(){
             }
 
         }else{
-            //final del archivo de verdad
+            //final del archivo tengo que acabar de leer lo que esta en el buffer antes de retornar el eof
+
+    
             return EOF; //devuelvo el EOF del archivo
         }
 
     }else{
-        caracter_actual = miBuffer.B[miBuffer.delantero - (TAM)]; //sirve para modular el segundo buffer
+        caracter_actual = miBuffer.B[miBuffer.delantero - (TAM-1)]; //sirve para modular el segundo buffer
 
-        if (!feof(archivo)){ //Si no se llego al fin de fichero
+        /*Para comprobar si se llego al final del archivo vamos a comprobar 
+        que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
+
+        if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
             if (caracter_actual!= '\0'){ //si 
                 miBuffer.delantero+=1;
                 return caracter_actual;

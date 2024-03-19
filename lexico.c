@@ -90,6 +90,7 @@ void numerico() {
 
 
       default:
+      //TODO: Rellenar el caso de dafault
 
         break;
     }
@@ -98,8 +99,9 @@ void numerico() {
   
 }
 
+
 //automata que se encarga de reconocer un automata
-void comentarios(){
+void comentarios_strings(){
 
     int estado = 0;
     int saltado = 0;
@@ -113,23 +115,27 @@ void comentarios(){
         //pedimos siguiente carater
         caracter = sigCaracter();
 
-        if (caracter == '"'){
-            caracter = sigCaracter();
+        if (caracter == '"'){ 
+            caracter = sigCaracter(); //llevamos ""
             if (caracter == '"'){
                 //vamos al automata que procesa caracteres hasta que encuentra tres comillas
-                estado = 1;
+                estado = 1; //llevamos """"
                 
             }else{
-                estado = 3;
+                /*Dos comillas seguidas de un caracter diferente, string vacio*/
+                 //TODO: dos comillas tiene que reconocerse como string
+                estado = 4;
             }
             estado = 1; //compramos si viene otra comilla
-        }else{
+        }else{ 
+            /*Llevamos una comilla seguida de un caracter diferente (posible string)*/
+            //TODO: una comilla solo tambien tiene que procesarlo el automata de strings
             estado=3; //estado no aceptado
             //puede que sea un string
         }
     }
 
-    while (saltado==0 && error ==0){
+    while (saltado==0 && error == 0 && aceptado == 0){
 
         switch (estado){
 
@@ -144,6 +150,7 @@ void comentarios(){
                 }while(caracter!='\n');
 
                 saltado=1;
+                 printf("Comentario Saltado\n");
 
 
                 break;
@@ -163,23 +170,28 @@ void comentarios(){
 
                 if (caracter == EOF) {
                     printf("Error no se ha cerrado el comentario multilinea");
+                    error=1;
                 }else{
                     //falta por procesar todavia dos comillas 
                     estado = 2;
+                   
                 }
 
 
                 break;
 
-            case 2: //comentario multilinea, nos faltan dos comillas por procesar
+            case 2: //string literal largo multilinea, nos faltan dos comillas por procesar
 
                 caracter = sigCaracter(); 
+                printf("Caracter procesado %c\n",caracter);
+                
 
                 if (caracter =='"'){//Llevamos ""
                     caracter = sigCaracter();
-                    if (caracter == '"'){
-                        saltado = 1;
-                        printf("Saltado\n");
+                    printf("Caracter procesado %c\n",caracter);
+                    if (caracter == '"'){ //encontrado el string literal largo
+                        aceptado = 1;
+                        printf("Aceptado\n");
                     }else{
                         estado = 1;
                     }
@@ -190,16 +202,55 @@ void comentarios(){
 
                 break;
 
-            case 3:
+            //TODO: Comprobar bien estos dos casos
 
-            //TODO: ME FALTA ESTO
+            case 3: //una comilla seguida de un caracter diferente a una comilla
 
+            /*Debemos de leer caracteres hasta que leeamos una comilla 
+            que significa que es un string. Tener cuenta el caso aislado de escapado de comillas con una barra */
 
+                /*Caracter procesado */
+
+                printf("Caracter procesado %c\n",caracter);
+
+                 do {
+                    caracter = sigCaracter();
+                    printf("Caracter procesado %c\n",caracter);
+
+                //encontro la primera comilla aun le faltan dos comillas mas para aceptarlo    
+                }while (caracter != '"' && caracter != EOF && caracter != '\\');
+
+                if (caracter == '"'){
+                    //si se leyo una comilla ya se cierra el string  y lo aceptamos
+                    aceptado=1;
+                }else if (caracter == '\\'){
+                    /*Tenemos que procesar el siguiente caracter para evitar los escapados
+                    Como por ejemplo:
+                    \""*/
+                    caracter = sigCaracter();
+                    /*Una vez pillado el siguiente caracter seguimos en el mismo automata esperando la comilla*/
+    
+                }else{ //es un eof
+                    printf("Error no se ha cerrado el comentario multilinea");
+                    error = 1;
+                }
+
+                break;
+
+            case 4: //doble comilla es un string vacio
+
+            //Al encontrar la doble comilla ya aceptamos la cadena
+
+                aceptado = 1;
 
 
                 break;
+
+            
             
             default:
+
+            //TODO: Rellenar el caso de dafault
 
 
                 break;
@@ -223,7 +274,7 @@ void otroTipo(){
         case '"':
         case '#':
         
-            comentarios();
+            comentarios_strings();
 
             break;
         
@@ -235,6 +286,7 @@ void otroTipo(){
         
         
         default:
+        //TODO: Rellenar el caso de dafault
 
             break;
     }
@@ -275,11 +327,25 @@ char sigCompLexico(){
         break;
     
       default:
+      //TODO: Rellenar el caso de dafault
 
         break;
     }
     
   } while (caracter != EOF && aceptado==0);
+
+  if (caracter == EOF){
+    return caracter;
+  }
+
+
+  printf("Componente Aceptado\n");
+  aceptado = 0;
+  printf("Aceptado es %d\n",aceptado);
+
+
+
+  //return 0;
 
 
 

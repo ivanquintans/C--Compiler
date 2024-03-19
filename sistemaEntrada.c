@@ -35,7 +35,7 @@ void cargarBloque(){
          //si estamos en el bloque A
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
-        if ( (leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo))< TAM-1){
+        if ((leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo))< TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
             miBuffer.A[leidos] = EOF;
 
@@ -51,7 +51,9 @@ void cargarBloque(){
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
         if ( (leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
-            miBuffer.A[leidos] = EOF;
+            printf("Estoy Aqui\n");
+            printf("Leidos es %d\n",leidos);
+            miBuffer.B[leidos] = EOF;
 
         }
         miBuffer.B[TAM -1] = '\0';

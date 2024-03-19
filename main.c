@@ -19,9 +19,9 @@ int main(int argc, char **argv)
    inicializarTablaSimbolos();
 
   //inicializamos el sistema de entrada
-  //iniciarSistemaEntrada(argv[1]);
+  iniciarSistemaEntrada(argv[1]);
   //Inicializamos el sintactico
-  //inicializarSintactico();
+  inicializarSintactico();
  
 
 

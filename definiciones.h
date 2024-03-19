@@ -46,7 +46,7 @@
 #define MAYORMAYOR  337    // >>
 #define DOUSPUNTOSIGUAL 338     // :=
 #define MAYORIGUAL 339      //>=
-#define MAYORIGUAL 340     //<=
+#define MENORIGUAL 340     //<=
 #define IGUALIGUAL 341     //==
 #define DISTINTO 342    //!=
 #define ASTERICOASTERISCO 343     //**

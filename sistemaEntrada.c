@@ -178,10 +178,10 @@ void aceptarLexema(compLexico *compActual){
         //mas la posición inicio para asi empezar desde donde queremos
 
         if (miBuffer.current == 0){
-            strncpy(compActual->lexema, miBuffer.A[miBuffer.inicio], tamLexema);
+            strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
             compActual->lexema[TAM -1] = '\0'; //evitar errores
         }else {
-            strncpy(compActual->lexema, miBuffer.B[miBuffer.inicio], tamLexema);
+            strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio, tamLexema);
             compActual->lexema[TAM -1] = '\0'; //evitar errores
         }
     //Inicio en A y delantero en B
@@ -193,7 +193,7 @@ void aceptarLexema(compLexico *compActual){
         //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
         int tamPrimeraparte = ((tamLexema -1) - miBuffer.inicio);
 
-        strncpy(compActual->lexema,miBuffer.A[miBuffer.inicio], tamPrimeraparte);
+        strncpy(compActual->lexema,miBuffer.A + miBuffer.inicio, tamPrimeraparte);
         //copiamos la parte del bloque B
         strncpy(compActual->lexema + tamPrimeraparte,miBuffer.B, miBuffer.delantero - (TAM-1)); //le restamos al delantero la parte del buffer A
         //se mete el '\0'
@@ -207,7 +207,7 @@ void aceptarLexema(compLexico *compActual){
          int tamPrimeraparte = (tamLexema -1) - (miBuffer.inicio - TAM);
 
         //copiamos la parte del lexema del bloque B
-        strncpy(compActual->lexema,miBuffer.B[(miBuffer.inicio - TAM)],tamPrimeraparte); //el numero a copiar es el tamaño de lexema -1 menos la posicón del buffer B
+        strncpy(compActual->lexema,miBuffer.B + (miBuffer.inicio - TAM),tamPrimeraparte); //el numero a copiar es el tamaño de lexema -1 menos la posicón del buffer B
         //copiamos la parte del bloque A
         strncpy(compActual->lexema + tamPrimeraparte, miBuffer.A, miBuffer.delantero +1 );
         //se mete el '\0'

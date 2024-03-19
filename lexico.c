@@ -429,11 +429,24 @@ void otroTipo(){
                     break;
 
 
+                case '>':
+                    estado = 1;
+                    break;
 
+                case '<':
+                    estado = 3;
+                    break;
 
+                case '/':
+                    estado = 5;
+                    break;
 
-                case 0:
-                    
+                case '*':
+                    estado = 7;
+                    break;
+
+                case '-':
+                    estado = 9;
                     break;
                 
         
@@ -445,13 +458,163 @@ void otroTipo(){
 
         break;
 
+        case 1: // se leyó >
 
+            caracter = sigCaracter();
 
-        case 1:
+            switch(caracter){
 
+                case '>': //>>
+                    estado=2;
+                    break;
+                
+                case '=': //>=
 
+                    break;
+
+                default: //solo es >
+                    retroceder();
+
+                    break;
+            }
 
             break;
+
+        case 2: // se leyó >>
+
+            caracter = sigCaracter();
+
+            if (caracter == '='){ //se leyo >>=
+
+            }else{ //se leyo solo >>
+                retroceder();
+            }
+
+            break;
+
+
+        case 3: // se leyó <
+
+            caracter = sigCaracter();
+
+            switch(caracter){
+
+                case '<': //<<
+                    estado=4;
+                    break;
+                
+                case '=': //<=
+
+                    break;
+
+                default: //solo es <
+                    retroceder();
+
+                    break;
+            }
+            
+            break;
+
+        case 4: // se leyó <<
+
+            caracter = sigCaracter();
+
+            if (caracter == '='){ //se leyo <<=
+
+            }else{ //se leyo solo <<
+                retroceder();
+            }
+
+            break;
+
+        case 5: // se leyó *
+
+            caracter = sigCaracter();
+
+            switch(caracter){
+
+                case '*': //**
+                    estado=4;
+                    break;
+                
+                case '=': //<=
+
+                    break;
+
+                default: //solo es *
+                    retroceder();
+
+                    break;
+            }
+            
+            break;
+
+        case 6: // se leyó **
+
+            caracter = sigCaracter();
+
+            if (caracter == '='){ //se leyo **=
+
+            }else{ //se leyo solo **
+                retroceder();
+            }
+
+            break;
+
+        case 7: // se leyó /
+
+            caracter = sigCaracter();
+
+            switch(caracter){
+
+                case '/': // //
+                    estado=4;
+                    break;
+                
+                case '=': // /=
+
+                    break;
+
+                default: //solo es /
+                    retroceder();
+
+                    break;
+            }
+            
+            break;
+
+        case 8: // se leyó //
+
+            caracter = sigCaracter();
+
+            if (caracter == '='){ //se leyo //=
+
+            }else{ //se leyo solo //
+                retroceder();
+            }
+
+            break;
+
+        case 9:  // -
+
+        caracter = sigCaracter();
+
+        switch (caracter){
+
+            case '>': // ->
+
+                break;
+
+            case '=': // =-
+
+                break;
+
+            default: //solo es un -
+
+                retroceder();
+                break;
+        }
+
 
 
     }

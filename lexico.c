@@ -268,27 +268,192 @@ void comentarios_strings(){
 /*Funcion que redirreciona el automata a cualquiera de los otros casos que no sea alfanumerico o numérico*/
 void otroTipo(){
 
-    switch (caracter){
+    int estado = 0;
 
-        //si es una barra o una almohadilla lo mandamos al automata de comentarios
-        case '"':
-        case '#':
+
+    switch (estado){
+
+        case 0: //caso de primer caracter
+
+            switch (caracter){
+
+                //si es una barra o una almohadilla lo mandamos al automata de comentarios
+                case '"':
+                case '#':
+                
+                    comentarios_strings();
+
+                    break;
+                
+                /*Casos de aceptacion directa de delimitadores y operadores*/
+                
+                case '(':
+                    
+                    break;
+
+                case ')':
+                    
+                    break;
+
+                case '[':
+                    
+                    break;
+                
+                case ']':
+                    
+                    break;
+                
+                case '{':
+                    
+                    break;
+
+                case '}':
+                    
+                    break;
+                
+                case '~':
+                    
+                    break;
+
+                case ',':
+                    
+                    break;
+
+                case '.':
+                    
+                    break;
+
+                case ';':
+                    
+                    break;
+
+                case '!':
+                    caracter = sigCaracter();
+                    if (caracter == '='){
+
+                    }else{
+                        //TODO:lanzar error
+                    }
+                    
+                    break;
+
+                /*Casos de aceptacion no directa de delimitadores y operadores*/
+
+
+                case '=': 
+                /*Puede ser o igual solo o igual igual*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el igual
+                    retroceder();
+
+                }
+                    break;
+
+                case ':': 
+                /*Puede ser o : solo o :=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el :
+                    retroceder();
+
+                }
+                    break;
+
+                case '^': 
+                /*Puede ser o ^ solo o ^=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el ^
+                    retroceder();
+
+                }
+                    break;
+
+                case '|': 
+                /*Puede ser o | solo o |=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el |
+                    retroceder();
+
+                }
+                    break;
+
+                case '&': 
+                /*Puede ser o & solo o &=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el &
+                    retroceder();
+
+                }
+                    break;
+
+                case '@': 
+                /*Puede ser o @ solo o @=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el @
+                    retroceder();
+
+                }
+                    break;
+
+                case '%': 
+                /*Puede ser o % solo o %=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el %
+                    retroceder();
+
+                }
+                    break;
+
+                case '+': 
+                /*Puede ser o + solo o +=*/
+                caracter = sigCaracter();
+                if (caracter == '='){
+
+                }else{ //no es un igual, retrocedemos y devolvemos solo el +
+                    retroceder();
+
+                }
+                    break;
+
+
+
+
+
+                case 0:
+                    
+                    break;
+                
         
-            comentarios_strings();
+                default:
+                //TODO: Rellenar el caso de dafault
+
+                    break;
+            }
+
+        break;
+
+
+
+        case 1:
+
+
 
             break;
-        
-        case 0:
-            
-            break;
-        
-   
-        
-        
-        default:
-        //TODO: Rellenar el caso de dafault
 
-            break;
+
     }
 
 }

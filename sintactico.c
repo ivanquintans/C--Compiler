@@ -11,7 +11,7 @@ void inicializarSintactico() {
 
     do{
         caracter = sigCompLexico();
-        printf("Caracter leido: %c\n", caracter);
+        //printf("Caracter leido: %c\n", caracter);
         
     }while (caracter != EOF);
     

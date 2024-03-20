@@ -171,7 +171,7 @@ void retroceder(){
     if (miBuffer.current == 0){
         if (miBuffer.delantero == 0){
             alternarBloque();
-            miBuffer.delantero == 2* TAM -1; //ultima posición del buffer b
+            miBuffer.delantero == 2* TAM -2; //ultima posición del buffer b antes del \0
         }else{
           miBuffer.delantero--;
         }
@@ -179,9 +179,12 @@ void retroceder(){
 
         if (miBuffer.delantero= TAM){
             miBuffer.current = 0;
+            miBuffer.delantero -= 2; //ultima posición del buffer a antes del \0
+        }else{
+            miBuffer.delantero--;
         }
 
-        miBuffer.delantero--;
+        
 
     }
 
@@ -189,6 +192,8 @@ void retroceder(){
 }
 
 void saltarLexema() {
+
+    //TODO: REHACER
 
     /*Funcion que se encarga de actualizar el valor del inicio*/
 
@@ -205,22 +210,32 @@ void saltarLexema() {
 
 void saltarCaracter(){
 
-    if (miBuffer.current == 0) {  // Se é o bloque A:
-        // Compróbase a que elemento do bloque apunta o punteiro inicio
-        if (miBuffer.inicio == TAM - 1) {    // Se apuntaba ao último elemento, cámbiase de bloque e cárgase
-            cargarBloque();    
+    if (miBuffer.current == 0) {  // Si estamos en el buffer a
+
+        if (miBuffer.delantero == (TAM -1)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
+            /*Adelantamos tanto el inicio como el buffer delantero*/
+            miBuffer.delantero+=2;
+            miBuffer.inicio+=2;
+            /*Cambiamos el bloque activo y cargamos*/
             alternarBloque();
-        }
-        miBuffer.inicio++;
-    } else {                // Se é o bloque B:
-        // O proceso é análogo ao bloque A
-        if (miBuffer.inicio == 2 * TAM - 1) {
             cargarBloque();
-            miBuffer.current = 0;
-            miBuffer.inicio = 0;
-        } else {
+        }else{
+            miBuffer.delantero++;
             miBuffer.inicio++;
         }
+        
+    } else { // Si estamos en el buffer b
+
+        if (miBuffer.delantero == (2 * TAM)-1){
+            alternarBloque();
+            cargarBloque();
+            miBuffer.inicio=0;
+
+        }else{
+            miBuffer.delantero++;
+            miBuffer.inicio++;
+        }
+        
     }
    
 }

@@ -44,20 +44,20 @@ void cargarBloque(){
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
 
-        for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        //for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
         if ((leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
-            printf("Estoy Aqui\n");
-            printf("Leidos es %d\n",leidos);
+            //printf("Estoy Aqui\n");
+            //printf("Leidos es %d\n",leidos);
             miBuffer.B[leidos] = EOF;
 
         }
         miBuffer.B[TAM -1] = '\0';
-        for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
+        //for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
 
 
   }
@@ -69,12 +69,12 @@ void cargarBloque(){
 void alternarBloque(){
 
     if (miBuffer.current==0){ //Si es a
-        printf("Estoy cambiando a B\n");
+        //printf("Estoy cambiando a B\n");
         miBuffer.current=1;
     }else{
         miBuffer.current=0;
         miBuffer.delantero=0;
-        printf("Estoy cambiando a A\n");
+        //printf("Estoy cambiando a A\n");
          //Devolvemos el puntero delantero al inicio del primer buffer
     } 
 
@@ -167,6 +167,18 @@ void retroceder(){
     miBuffer.delantero-=1; //tal y como esta implementando nunca va a ser cero por lo que no da problemas
 }
 
+void saltarLexema() {
+
+    /*Funcion que se encarga de actualizar el valor del inicio*/
+
+    if (miBuffer.delantero == (2 * TAM)-1) {
+        miBuffer.inicio = 0;
+    } else {
+        miBuffer.inicio = miBuffer.delantero;
+    }
+}
+
+
 void aceptarLexema(compLexico *compActual){
 
     int tamLexema;
@@ -218,4 +230,7 @@ void aceptarLexema(compLexico *compActual){
         compActual->lexema[tamPrimeraparte + miBuffer.delantero+1] = '\0';
 
     }
+
+    //una vez aceptado el lexema debemos de saltarlo
+    saltarLexema();
 }

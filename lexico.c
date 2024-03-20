@@ -12,6 +12,16 @@ int aceptado = 0; //valor por defecto que determina que no esta aceptada la cade
 int linea=1; //valor que nos permite lanzar errores de una manera exitosa
 compLexico comp = {0, NULL};
 
+/*Funcion encargada de aceptar el lexema actual*/
+
+void lexemaAceptadoConcodigo(int codigo_componente){
+
+    aceptarLexema(&comp);
+    comp.codigo = codigo_componente;
+    aceptado=1;
+
+    /*Con el componente léxico que sea, llamamos a la funcion que acepta el lexema en el sistema de entrada*/
+}
 //Funciones para los autómatas que reconocen cada tipo
 
 // Función auxiliar correspondente ao AF de cadeas alfanuméricas
@@ -20,15 +30,13 @@ void alfanumerico() {
 
   do{
     caracter = sigCaracter();
-    printf("Caracter Procesado %c\n",caracter);
+    //printf("Caracter Procesado %c\n",caracter);
   }while (isalpha(caracter) || isdigit(caracter) || caracter == '_');//mientras sea alpha, numerico o un guion bajo es valido
     
   //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
-  printf("Identificador Aceptado \n");
   retroceder();
+  lexemaAceptadoConcodigo(ID);
   
-  
-
 }
 
 void numerico() {
@@ -61,7 +69,7 @@ void numerico() {
 
 
             caracter = sigCaracter();
-            printf("Caracter procesado %c\n",caracter);
+            //printf("Caracter procesado %c\n",caracter);
 
             switch (caracter){
 
@@ -96,7 +104,7 @@ void numerico() {
 
              do{
                 caracter = sigCaracter();
-                printf("Caracter procesado %c\n",caracter);
+               // printf("Caracter procesado %c\n",caracter);
                 //comprobamos que si el caracter es un _ que no hayan dos seguidos
                 if (caracter== '_'){
                     caracter = sigCaracter();
@@ -123,7 +131,7 @@ void numerico() {
                 estado_num = 4;
                 
             }else { //-Puede ser un delimitador y hay que aceptar la cadena y retroceder
-                printf("Salí fuera con el caracter %c\n",caracter);
+                //printf("Salí fuera con el caracter %c\n",caracter);
                 retroceder();
                 aceptado = 1;
             }
@@ -135,7 +143,7 @@ void numerico() {
             do{
 
                 caracter = sigCaracter();
-                printf("Caracter procesado %c\n",caracter);
+               // printf("Caracter procesado %c\n",caracter);
                 //comprobamos que si el caracter es un _ que no hayan dos seguidos
                 if (caracter== '_'){
                     caracter = sigCaracter();
@@ -163,7 +171,7 @@ void numerico() {
              do{
 
                 caracter = sigCaracter();
-                printf("Caracter procesado %c\n",caracter);
+                //printf("Caracter procesado %c\n",caracter);
                 
                 /*Comprobación de dos mases seguidos*/
                 if (caracter== '+'){
@@ -203,7 +211,7 @@ void numerico() {
             }while (isdigit(caracter) || (caracter == '+') || (caracter == '-') || (caracter == '_'));
 
             /*Debemos de retroceder para procesar el caracter*/
-            printf("Salí fuera con el caracter %c\n",caracter);
+            //printf("Salí fuera con el caracter %c\n",caracter);
             retroceder();
             aceptado=1;
 
@@ -284,7 +292,7 @@ void comentarios_strings(){
 
                 do{
                      caracter = sigCaracter();
-                     printf("Caracter procesado %c\n",caracter);
+                     //printf("Caracter procesado %c\n",caracter);
 
                 }while(caracter!='\n');
 
@@ -300,7 +308,7 @@ void comentarios_strings(){
 
                 do {
                     caracter = sigCaracter();
-                    printf("Caracter procesado %c\n",caracter);
+                    //printf("Caracter procesado %c\n",caracter);
 
                 //encontro la primera comilla aun le faltan dos comillas mas para aceptarlo    
                 }while (caracter != '"' && caracter != EOF);
@@ -322,15 +330,15 @@ void comentarios_strings(){
             case 2: //string literal largo multilinea, nos faltan dos comillas por procesar
 
                 caracter = sigCaracter(); 
-                printf("Caracter procesado %c\n",caracter);
+                //printf("Caracter procesado %c\n",caracter);
                 
 
                 if (caracter =='"'){//Llevamos ""
                     caracter = sigCaracter();
-                    printf("Caracter procesado %c\n",caracter);
+                    //printf("Caracter procesado %c\n",caracter);
                     if (caracter == '"'){ //encontrado el string literal largo
                         aceptado = 1;
-                        printf("Aceptado\n");
+                        //printf("Aceptado\n");
                     }else{
                         estado = 1;
                     }
@@ -350,11 +358,11 @@ void comentarios_strings(){
 
                 /*Caracter procesado */
 
-                printf("Caracter procesado %c\n",caracter);
+                //printf("Caracter procesado %c\n",caracter);
 
                  do {
                     caracter = sigCaracter();
-                    printf("Caracter procesado %c\n",caracter);
+                    //printf("Caracter procesado %c\n",caracter);
 
                 //encontro la primera comilla aun le faltan dos comillas mas para aceptarlo    
                 }while (caracter != '"' && caracter != EOF && caracter != '\\');
@@ -774,7 +782,7 @@ void otroTipo(){
 
 //funcion que devuelve al sintactico el siguiente componente lexico 
 
-char sigCompLexico(){
+compLexico sigCompLexico(){
 
  
   //
@@ -783,7 +791,7 @@ char sigCompLexico(){
   do{
    
     caracter = sigCaracter();
-    printf("Caracter leido %c\n",caracter);
+    //printf("Caracter leido %c\n",caracter);
     //return caracter;
     
     
@@ -814,17 +822,22 @@ char sigCompLexico(){
   } while (caracter != EOF && aceptado==0);
 
   if (caracter == EOF){
-    return caracter;
+
+        /*Si es el EOF lo indicamos y finalizamos el analisis*/
+                     
+        comp.lexema = NULL;
+        comp.codigo = EOF;
+                           
   }
 
 
-  printf("Componente Aceptado\n");
+  //printf("Componente Aceptado\n");
   aceptado = 0;
-  printf("Aceptado es %d\n",aceptado);
+  //printf("Aceptado es %d\n",aceptado);
 
 
 
-  //return 0;
+  return comp;
 
 
 

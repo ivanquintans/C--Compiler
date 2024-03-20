@@ -35,58 +35,137 @@ void alfanumerico() {
 
 void numerico() {
 
+    /*Los tipos de numeros que hay en wilcoxon.py son:
+   
+   - Enteros normales
+   - Exponenciales
+   - Floats
+   - Hexadecimales  */
+
   int estado_num = 0;
-
-  /*el numero puede ser de diversos tipos:
-    -integer literal
-    -floating point literals 
-    -imaginary
-
-    89789.
-  */
+  int error=0;
 
   //en primer lugar vamos a separar los caracteres de incio 
-  if (caracter == 0){
-    estado_num = 1;
+  if (caracter == '0'){
+    printf("Estoy dentro \n");
+    estado_num = 0;
   }else if (caracter =='.'){
-    estado_num =2;
+    estado_num = 1;
   }else {
-    estado_num =0;
+    estado_num = 2;
   }
 
   do {
-    caracter = sigCaracter();
+        
     switch (estado_num){
 
-      case 0: //sigue siendo un numero
-        if(!isdigit(caracter)){ //redirecion de tipo
 
-          switch (caracter){
-
-            case '.':
-              estado_num=2;
-              break;
-            
+        case 0: /*Es un cero por lo que despues solo le puede venir una x o X (en el caso de wilcoxon) o un punto */
 
 
-            default:
+            caracter = sigCaracter();
+            printf("Caracter procesado %c\n",caracter);
 
+            switch (caracter){
 
-              break;
-          }
-        
+                case 'X':  /*En caso de que sea una x estamos ante un hexadecimal*/
+                case 'x':
+                    estado_num = 3;
+                    break;
+
+                case 'e': //si le entra una e estamos en un exponencial
+                case 'E':
+                    estado_num = 4;
+                    break;
+
+                case '.': //en caso de que sea un punto estamos en un float del tipo 0.
+                    estado_num = 5;
+                    break;
+
+                default:
+                    //TODO: Hacer todos los defaults
+                    break;
+            }
+
+            break;
       
-        }
-
-      
-        break;
-      
-      case 1: //redirecion de tipo
+        case 1: /*El primer digito es un punto*/
 
     
 
-      
+            break;
 
+        case 2: //sigue siendo un numero
+
+             do{
+                caracter = sigCaracter();
+                printf("Caracter procesado %c\n",caracter);
+                //comprobamos que si el caracter es un _ que no hayan dos seguidos
+                if (caracter== '_'){
+                    caracter = sigCaracter();
+                    if (caracter == '_'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                }
+
+            }while (isdigit(caracter) || (caracter == '_'));
+
+            /*Ahora debemos de comprobar que caracter fue el que nos saco ya que en funcion del tipo puede ser diferentes:*/
+
+            if (caracter == '.'){// -Puede ser un . y ser un float ahora
+                printf("Voy a ser un float (leido = %c)\n",caracter);
+                //TODO; quitar esto
+                aceptado=1;
+
+            } else if (caracter == 'e' || caracter == 'E'){ //-Puede ser una e y ser un exponent float
+                printf("Voy a ser un exponencial (leido = %c)\n",caracter);
+                //TODO; quitar esto
+                aceptado=1;
+            }else { //-Puede ser un delimitador y hay que aceptar la cadena y retroceder
+                printf("Salí fuera con el caracter %c\n",caracter);
+                retroceder();
+                aceptado = 1;
+            }
+
+            break;
+
+        case 3: //inicio de hexadecimal
+
+            do{
+
+                caracter = sigCaracter();
+                printf("Caracter procesado %c\n",caracter);
+                //comprobamos que si el caracter es un _ que no hayan dos seguidos
+                if (caracter== '_'){
+                    caracter = sigCaracter();
+                    if (caracter == '_'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                }
+
+            }while (isxdigit(caracter) || (caracter == '_'));
+
+            /*Debemos de retroceder para procesar el caracter*/
+            printf("Salí fuera con el caracter %c\n",caracter);
+            retroceder();
+            aceptado=1;
+
+            break;
+
+    
+
+
+    
 
 
       default:
@@ -95,7 +174,7 @@ void numerico() {
         break;
     }
 
-  }while (caracter != EOF && aceptado==0 );
+  }while (caracter != EOF && aceptado==0 && error==0 );
   
 }
 
@@ -270,6 +349,8 @@ void otroTipo(){
 
     int estado = 0;
 
+    //TODO: Se pueden hacer dos switch seguidos en vez de uno anidado
+
 
     switch (estado){
 
@@ -320,6 +401,20 @@ void otroTipo(){
                     break;
 
                 case '.':
+
+                    /*Debemos comprobar si el siguiente caracacter es un digito*/
+                    caracter = sigCaracter();
+
+                    if (isdigit(caracter)){
+                        /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
+                        retroceder();
+                        numerico();
+
+                        //TODO: hacer un break para que salga de aqui
+
+                    }
+
+            
                     
                     break;
 
@@ -341,91 +436,91 @@ void otroTipo(){
 
 
                 case '=': 
-                /*Puede ser o igual solo o igual igual*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o igual solo o igual igual*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el igual
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el igual
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case ':': 
-                /*Puede ser o : solo o :=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o : solo o :=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el :
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el :
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '^': 
-                /*Puede ser o ^ solo o ^=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o ^ solo o ^=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el ^
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el ^
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '|': 
-                /*Puede ser o | solo o |=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o | solo o |=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el |
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el |
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '&': 
-                /*Puede ser o & solo o &=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o & solo o &=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el &
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el &
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '@': 
-                /*Puede ser o @ solo o @=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o @ solo o @=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el @
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el @
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '%': 
-                /*Puede ser o % solo o %=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o % solo o %=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el %
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el %
+                        retroceder();
 
-                }
+                    }
                     break;
 
                 case '+': 
-                /*Puede ser o + solo o +=*/
-                caracter = sigCaracter();
-                if (caracter == '='){
+                    /*Puede ser o + solo o +=*/
+                    caracter = sigCaracter();
+                    if (caracter == '='){
 
-                }else{ //no es un igual, retrocedemos y devolvemos solo el +
-                    retroceder();
+                    }else{ //no es un igual, retrocedemos y devolvemos solo el +
+                        retroceder();
 
-                }
+                    }
                     break;
 
 
@@ -614,9 +709,6 @@ void otroTipo(){
                 retroceder();
                 break;
         }
-
-
-
     }
 
 }
@@ -641,7 +733,7 @@ char sigCompLexico(){
 
       case 0: //primer caracter leido redirigimos a automas principales
     
-        //en caso de ser un numero
+        //en caso de ser un numero o de ser un punto 
         if (isdigit(caracter)){
           numerico();
         //en caso de ser identificador

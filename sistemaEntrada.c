@@ -49,7 +49,7 @@ void cargarBloque(){
     }else{ //Si estamos en el bloque b
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
-        if ( (leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
+        if ((leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
             printf("Estoy Aqui\n");
             printf("Leidos es %d\n",leidos);
@@ -124,7 +124,9 @@ char sigCaracter(){
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
                 cargarBloque();
-                //retornamos null en caso de ser el eof ya que no lo quiero procesar
+                /*Reajustamos el valor a devolver*/
+                caracter_actual = miBuffer.B[miBuffer.delantero - (TAM-1)];
+                miBuffer.delantero+=1;
                 return caracter_actual;
                 
             }
@@ -149,7 +151,9 @@ char sigCaracter(){
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
                 cargarBloque();
-                //retornamos null en caso de ser el eof ya que no lo quiero procesar
+                /*Reajustamos el valor a devolver*/
+                caracter_actual = miBuffer.A[miBuffer.delantero];
+                miBuffer.delantero+=1;
                 return caracter_actual;
             }
         }else{

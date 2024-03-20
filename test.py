@@ -1,5 +1,2 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Sep 15 12:16:21 2015
-"""
-"Hola que \" tal"
+0x1234_345+
+123456e

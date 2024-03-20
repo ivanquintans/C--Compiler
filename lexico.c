@@ -30,7 +30,7 @@ void alfanumerico() {
 
   do{
     caracter = sigCaracter();
-    //printf("Caracter Procesado %c\n",caracter);
+    printf("Caracter Procesado %c\n",caracter);
   }while (isalpha(caracter) || isdigit(caracter) || caracter == '_');//mientras sea alpha, numerico o un guion bajo es valido
     
   //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
@@ -296,8 +296,13 @@ void comentarios_strings(){
 
                 }while(caracter!='\n');
 
+                //retrocedemos para leer el '\n'
+                retroceder();
+
                 saltado=1;
-                 printf("Comentario Saltado\n");
+                printf("Comentario Saltado\n");
+                saltarLexema();
+                
 
 
                 break;
@@ -337,8 +342,7 @@ void comentarios_strings(){
                     caracter = sigCaracter();
                     //printf("Caracter procesado %c\n",caracter);
                     if (caracter == '"'){ //encontrado el string literal largo
-                        aceptado = 1;
-                        //printf("Aceptado\n");
+                        lexemaAceptadoConcodigo(STRING);
                     }else{
                         estado = 1;
                     }
@@ -369,7 +373,7 @@ void comentarios_strings(){
 
                 if (caracter == '"'){
                     //si se leyo una comilla ya se cierra el string  y lo aceptamos
-                    aceptado=1;
+                    lexemaAceptadoConcodigo(STRING);
                 }else if (caracter == '\\'){
                     /*Tenemos que procesar el siguiente caracter para evitar los escapados
                     Como por ejemplo:
@@ -417,366 +421,380 @@ void otroTipo(){
 
     int estado = 0;
 
-    //TODO: Se pueden hacer dos switch seguidos en vez de uno anidado
+
+    switch (caracter){
+
+        //si es una barra o una almohadilla lo mandamos al automata de comentarios
+        case '"':
+        case '#':
+        
+            comentarios_strings();
+
+            break;
+        
+        /*Casos de aceptacion directa de delimitadores y operadores*/
+        
+        case '(':
+            
+            break;
+
+        case ')':
+            
+            break;
+
+        case '[':
+            
+            break;
+        
+        case ']':
+            
+            break;
+        
+        case '{':
+            
+            break;
+
+        case '}':
+            
+            break;
+        
+        case '~':
+            
+            break;
+
+        case ',':
+            
+            break;
+
+        case '.':
+
+            /*Debemos comprobar si el siguiente caracacter es un digito*/
+            caracter = sigCaracter();
+
+            if (isdigit(caracter)){
+                /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
+                numerico();
+                //TODO: hacer un break para que salga de aqui
+            }
+
+            retroceder();
+
+    
+            
+            break;
+
+        case ';':
+            
+            break;
+
+        case '!':
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{
+                //TODO:lanzar error
+            }
+            
+            break;
+
+        /*Casos de aceptacion no directa de delimitadores y operadores*/
 
 
-    switch (estado){
+        case '=': 
+            /*Puede ser o igual solo o igual igual*/
+            caracter = sigCaracter();
+            if (caracter == '='){
 
-        case 0: //caso de primer caracter
+            }else{ //no es un igual, retrocedemos y devolvemos solo el igual
+                retroceder();
+
+            }
+            break;
+
+        case ':': 
+            /*Puede ser o : solo o :=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el :
+                retroceder();
+
+            }
+            break;
+
+        case '^': 
+            /*Puede ser o ^ solo o ^=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el ^
+                retroceder();
+
+            }
+            break;
+
+        case '|': 
+            /*Puede ser o | solo o |=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el |
+                retroceder();
+
+            }
+            break;
+
+        case '&': 
+            /*Puede ser o & solo o &=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el &
+                retroceder();
+
+            }
+            break;
+
+        case '@': 
+            /*Puede ser o @ solo o @=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el @
+                retroceder();
+
+            }
+            break;
+
+        case '%': 
+            /*Puede ser o % solo o %=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el %
+                retroceder();
+
+            }
+            break;
+
+        case '+': 
+            /*Puede ser o + solo o +=*/
+            caracter = sigCaracter();
+            if (caracter == '='){
+
+            }else{ //no es un igual, retrocedemos y devolvemos solo el +
+                retroceder();
+
+            }
+            break;
+
+
+        case '>':
+            estado = 1;
+            break;
+
+        case '<':
+            estado = 3;
+            break;
+
+        case '/':
+            estado = 5;
+            break;
+
+        case '*':
+            estado = 7;
+            break;
+
+        case '-':
+            estado = 9;
+            break;
+        
+
+        default:
+                printf("Estoy aqui\n");
+                saltarCaracter();
+                mostrarInicioYDelantero();      //      Está pensado para os \t, \n e espacios do código
+                if (caracter == '\n') {
+                    linea++;
+                }
+                printf("Estamos en la linea %d\n",linea);
+                break;
+        
+
+            break;
+    }
+
+
+    do{
+
+        switch (estado){
+
+            case 0: //se aceptan directamente
+
+                aceptado = 1;
+
+
+                break;
+
+            case 1: // se leyó >
+
+                caracter = sigCaracter();
+
+                switch(caracter){
+
+                    case '>': //>>
+                        estado=2;
+                        break;
+                    
+                    case '=': //>=
+
+                        break;
+
+                    default: //solo es >
+                        retroceder();
+
+                        break;
+                }
+
+                break;
+
+            case 2: // se leyó >>
+
+                caracter = sigCaracter();
+
+                if (caracter == '='){ //se leyo >>=
+
+                }else{ //se leyo solo >>
+                    retroceder();
+                }
+
+                break;
+
+
+            case 3: // se leyó <
+
+                caracter = sigCaracter();
+
+                switch(caracter){
+
+                    case '<': //<<
+                        estado=4;
+                        break;
+                    
+                    case '=': //<=
+
+                        break;
+
+                    default: //solo es <
+                        retroceder();
+
+                        break;
+                }
+                
+                break;
+
+            case 4: // se leyó <<
+
+                caracter = sigCaracter();
+
+                if (caracter == '='){ //se leyo <<=
+
+                }else{ //se leyo solo <<
+                    retroceder();
+                }
+
+                break;
+
+            case 5: // se leyó *
+
+                caracter = sigCaracter();
+
+                switch(caracter){
+
+                    case '*': //**
+                        estado=4;
+                        break;
+                    
+                    case '=': //<=
+
+                        break;
+
+                    default: //solo es *
+                        retroceder();
+
+                        break;
+                }
+                
+                break;
+
+            case 6: // se leyó **
+
+                caracter = sigCaracter();
+
+                if (caracter == '='){ //se leyo **=
+
+                }else{ //se leyo solo **
+                    retroceder();
+                }
+
+                break;
+
+            case 7: // se leyó /
+
+                caracter = sigCaracter();
+
+                switch(caracter){
+
+                    case '/': // //
+                        estado=4;
+                        break;
+                    
+                    case '=': // /=
+
+                        break;
+
+                    default: //solo es /
+                        retroceder();
+
+                        break;
+                }
+                
+                break;
+
+            case 8: // se leyó //
+
+                caracter = sigCaracter();
+
+                if (caracter == '='){ //se leyo //=
+
+                }else{ //se leyo solo //
+                    retroceder();
+                }
+
+                break;
+
+            case 9:  // -
+
+            caracter = sigCaracter();
 
             switch (caracter){
 
-                //si es una barra o una almohadilla lo mandamos al automata de comentarios
-                case '"':
-                case '#':
-                
-                    comentarios_strings();
+                case '>': // ->
 
                     break;
-                
-                /*Casos de aceptacion directa de delimitadores y operadores*/
-                
-                case '(':
-                    
+
+                case '=': // =-
+
                     break;
 
-                case ')':
-                    
-                    break;
-
-                case '[':
-                    
-                    break;
-                
-                case ']':
-                    
-                    break;
-                
-                case '{':
-                    
-                    break;
-
-                case '}':
-                    
-                    break;
-                
-                case '~':
-                    
-                    break;
-
-                case ',':
-                    
-                    break;
-
-                case '.':
-
-                    /*Debemos comprobar si el siguiente caracacter es un digito*/
-                    caracter = sigCaracter();
-
-                    if (isdigit(caracter)){
-                        /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
-                        numerico();
-                        //TODO: hacer un break para que salga de aqui
-                    }
+                default: //solo es un -
 
                     retroceder();
-
-            
-                    
-                    break;
-
-                case ';':
-                    
-                    break;
-
-                case '!':
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{
-                        //TODO:lanzar error
-                    }
-                    
-                    break;
-
-                /*Casos de aceptacion no directa de delimitadores y operadores*/
-
-
-                case '=': 
-                    /*Puede ser o igual solo o igual igual*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el igual
-                        retroceder();
-
-                    }
-                    break;
-
-                case ':': 
-                    /*Puede ser o : solo o :=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el :
-                        retroceder();
-
-                    }
-                    break;
-
-                case '^': 
-                    /*Puede ser o ^ solo o ^=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el ^
-                        retroceder();
-
-                    }
-                    break;
-
-                case '|': 
-                    /*Puede ser o | solo o |=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el |
-                        retroceder();
-
-                    }
-                    break;
-
-                case '&': 
-                    /*Puede ser o & solo o &=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el &
-                        retroceder();
-
-                    }
-                    break;
-
-                case '@': 
-                    /*Puede ser o @ solo o @=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el @
-                        retroceder();
-
-                    }
-                    break;
-
-                case '%': 
-                    /*Puede ser o % solo o %=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el %
-                        retroceder();
-
-                    }
-                    break;
-
-                case '+': 
-                    /*Puede ser o + solo o +=*/
-                    caracter = sigCaracter();
-                    if (caracter == '='){
-
-                    }else{ //no es un igual, retrocedemos y devolvemos solo el +
-                        retroceder();
-
-                    }
-                    break;
-
-
-                case '>':
-                    estado = 1;
-                    break;
-
-                case '<':
-                    estado = 3;
-                    break;
-
-                case '/':
-                    estado = 5;
-                    break;
-
-                case '*':
-                    estado = 7;
-                    break;
-
-                case '-':
-                    estado = 9;
-                    break;
-                
-        
-                default:
-                //TODO: Rellenar el caso de dafault
-
                     break;
             }
-
-        break;
-
-        case 1: // se leyó >
-
-            caracter = sigCaracter();
-
-            switch(caracter){
-
-                case '>': //>>
-                    estado=2;
-                    break;
-                
-                case '=': //>=
-
-                    break;
-
-                default: //solo es >
-                    retroceder();
-
-                    break;
-            }
-
-            break;
-
-        case 2: // se leyó >>
-
-            caracter = sigCaracter();
-
-            if (caracter == '='){ //se leyo >>=
-
-            }else{ //se leyo solo >>
-                retroceder();
-            }
-
-            break;
-
-
-        case 3: // se leyó <
-
-            caracter = sigCaracter();
-
-            switch(caracter){
-
-                case '<': //<<
-                    estado=4;
-                    break;
-                
-                case '=': //<=
-
-                    break;
-
-                default: //solo es <
-                    retroceder();
-
-                    break;
-            }
-            
-            break;
-
-        case 4: // se leyó <<
-
-            caracter = sigCaracter();
-
-            if (caracter == '='){ //se leyo <<=
-
-            }else{ //se leyo solo <<
-                retroceder();
-            }
-
-            break;
-
-        case 5: // se leyó *
-
-            caracter = sigCaracter();
-
-            switch(caracter){
-
-                case '*': //**
-                    estado=4;
-                    break;
-                
-                case '=': //<=
-
-                    break;
-
-                default: //solo es *
-                    retroceder();
-
-                    break;
-            }
-            
-            break;
-
-        case 6: // se leyó **
-
-            caracter = sigCaracter();
-
-            if (caracter == '='){ //se leyo **=
-
-            }else{ //se leyo solo **
-                retroceder();
-            }
-
-            break;
-
-        case 7: // se leyó /
-
-            caracter = sigCaracter();
-
-            switch(caracter){
-
-                case '/': // //
-                    estado=4;
-                    break;
-                
-                case '=': // /=
-
-                    break;
-
-                default: //solo es /
-                    retroceder();
-
-                    break;
-            }
-            
-            break;
-
-        case 8: // se leyó //
-
-            caracter = sigCaracter();
-
-            if (caracter == '='){ //se leyo //=
-
-            }else{ //se leyo solo //
-                retroceder();
-            }
-
-            break;
-
-        case 9:  // -
-
-        caracter = sigCaracter();
-
-        switch (caracter){
-
-            case '>': // ->
-
-                break;
-
-            case '=': // =-
-
-                break;
-
-            default: //solo es un -
-
-                retroceder();
-                break;
         }
-    }
+        
+    }while (aceptado == 0);
 
 }
 
@@ -784,40 +802,31 @@ void otroTipo(){
 
 compLexico sigCompLexico(){
 
- 
-  //
-  int estado =0;
+
 
   do{
    
     caracter = sigCaracter();
-    //printf("Caracter leido %c\n",caracter);
+    printf("Caracter leido %c\n",caracter);
+    mostrarInicioYDelantero();
     //return caracter;
-    
-    
-    //hacemos un switch por el estado 
-    switch (estado){
 
-      case 0: //primer caracter leido redirigimos a automas principales
-    
-        //en caso de ser un numero o de ser un punto 
-        if (isdigit(caracter)){
+    //si leo el /0 paso al siguiente caracter 
+
+    if (caracter == '\0') {
+
+    }else if (isdigit(caracter)){
           numerico();
         //en caso de ser identificador
-        }else if (isalpha(caracter) || caracter == '_'){
+    }else if (isalpha(caracter) || caracter == '_'){
           alfanumerico();
-        }else{
+    }else{
             //en caso de que sea cualquier otra cosa
-            otroTipo();
-        }
-        
-        break;
-    
-      default:
-      //TODO: Rellenar el caso de dafault
-
-        break;
+        otroTipo();
     }
+    
+ //primer caracter leido redirigimos a automas principales
+    
     
   } while (caracter != EOF && aceptado==0);
 

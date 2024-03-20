@@ -44,7 +44,7 @@ void cargarBloque(){
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
 
-        //for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
 
@@ -57,7 +57,7 @@ void cargarBloque(){
 
         }
         miBuffer.B[TAM -1] = '\0';
-        //for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
+        for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
 
 
   }
@@ -110,23 +110,25 @@ char sigCaracter(){
     //printf("Delantero esta en %d\n",miBuffer.delantero);
     if (miBuffer.current==0){//A
 
+        /*Como mi estrategia es muevo puntero y luego leo si estamos en la posición cero no hacemos nada*/
+        if (miBuffer.delantero!=0){
+            miBuffer.delantero++; //en caso de no ser la posición cero, muevo el puntero y luego consumo
+        }
+
         caracter_actual = miBuffer.A[miBuffer.delantero];
-        //printf("Voy a leer el caracter %c\n",caracter_actual);
 
         /*Para comprobar si se llego al final del archivo vamos a comprobar 
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
         if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
             if (caracter_actual!= '\0'){ //si    
-                //printf("Estoy aqui dentro\n");
-                miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
                 cargarBloque();
                 /*Reajustamos el valor a devolver*/
-                caracter_actual = miBuffer.B[miBuffer.delantero - (TAM-1)];
-                miBuffer.delantero+=1;
+                miBuffer.delantero++;
+                caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //16 - 16
                 return caracter_actual;
                 
             }
@@ -139,21 +141,20 @@ char sigCaracter(){
         }
 
     }else{
-        caracter_actual = miBuffer.B[miBuffer.delantero - (TAM-1)]; //sirve para modular el segundo buffer
+        miBuffer.delantero++;
+        caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //sirve para modular el segundo buffer
 
         /*Para comprobar si se llego al final del archivo vamos a comprobar 
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
         if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
             if (caracter_actual!= '\0'){ //si 
-                miBuffer.delantero+=1;
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
                 cargarBloque();
-                /*Reajustamos el valor a devolver*/
+                //devuelvo ya el caracter siguiente
                 caracter_actual = miBuffer.A[miBuffer.delantero];
-                miBuffer.delantero+=1;
                 return caracter_actual;
             }
         }else{
@@ -164,7 +165,27 @@ char sigCaracter(){
 }
 
 void retroceder(){
-    miBuffer.delantero-=1; //tal y como esta implementando nunca va a ser cero por lo que no da problemas
+
+    /*Si estoy en el bloque A*/
+
+    if (miBuffer.current == 0){
+        if (miBuffer.delantero == 0){
+            alternarBloque();
+            miBuffer.delantero == 2* TAM -1; //ultima posición del buffer b
+        }else{
+          miBuffer.delantero--;
+        }
+    }else{ //En caso del bloque B
+
+        if (miBuffer.delantero= TAM){
+            miBuffer.current = 0;
+        }
+
+        miBuffer.delantero--;
+
+    }
+
+    
 }
 
 void saltarLexema() {
@@ -176,6 +197,37 @@ void saltarLexema() {
     } else {
         miBuffer.inicio = miBuffer.delantero;
     }
+
+    printf("El valor de inicio es %d\n",miBuffer.inicio);
+    printf("El valor de delantero es %d\n",miBuffer.delantero);
+}
+
+
+void saltarCaracter(){
+
+    if (miBuffer.current == 0) {  // Se é o bloque A:
+        // Compróbase a que elemento do bloque apunta o punteiro inicio
+        if (miBuffer.inicio == TAM - 1) {    // Se apuntaba ao último elemento, cámbiase de bloque e cárgase
+            cargarBloque();    
+            alternarBloque();
+        }
+        miBuffer.inicio++;
+    } else {                // Se é o bloque B:
+        // O proceso é análogo ao bloque A
+        if (miBuffer.inicio == 2 * TAM - 1) {
+            cargarBloque();
+            miBuffer.current = 0;
+            miBuffer.inicio = 0;
+        } else {
+            miBuffer.inicio++;
+        }
+    }
+   
+}
+
+void mostrarInicioYDelantero(){
+    printf("El valor de el puntero inicio después de leer es %d\n",miBuffer.inicio);
+    printf("El valor de el puntero delantero después de leer es %d\n",miBuffer.delantero);
 }
 
 
@@ -187,7 +239,7 @@ void aceptarLexema(compLexico *compActual){
 
     //En caso de que el inicio y el fin esten en a o en b
     if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
-        tamLexema = miBuffer.delantero - miBuffer.inicio;
+        tamLexema = (miBuffer.delantero-1) - miBuffer.inicio;
         compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
 
         //hacemos la copia en el lexema del buffer que queremos
@@ -218,7 +270,7 @@ void aceptarLexema(compLexico *compActual){
     //Inicio en B y delantero en A
     }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
 
-        tamLexema = 2*TAM - miBuffer.delantero + miBuffer.inicio;
+        tamLexema = (2*TAM-1) - miBuffer.inicio + miBuffer.delantero;
 
          int tamPrimeraparte = (tamLexema -1) - (miBuffer.inicio - TAM);
 
@@ -233,4 +285,6 @@ void aceptarLexema(compLexico *compActual){
 
     //una vez aceptado el lexema debemos de saltarlo
     saltarLexema();
+    printf("El valor de inicio es %d\n",miBuffer.inicio);
+    printf("El valor de delantero es %d\n",miBuffer.delantero);
 }

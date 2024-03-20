@@ -66,6 +66,8 @@
 #define MENORMENORIGUAL 357    //<<=
 #define ASTERISCOASTERISCOIGUAL 358     //**=
 
+#define STRING 359
+
 
 
 

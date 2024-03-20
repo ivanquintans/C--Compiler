@@ -17,15 +17,13 @@ compLexico comp = {0, NULL};
 // Función auxiliar correspondente ao AF de cadeas alfanuméricas
 void alfanumerico() {
   //el primer caracter es alpha numerico asi que estamos en este automata
-  caracter = sigCaracter();
-  printf("Caracter Procesado %c\n",caracter);
 
-  while (isalpha(caracter) || isdigit(caracter) || caracter == '_'){ //mientras sea alpha, numerico o un guion bajo es valido
+  do{
     caracter = sigCaracter();
     printf("Caracter Procesado %c\n",caracter);
-  }
-
-  //como se procesa de manera correcta debemos de aceptar el lexema y de retroceder
+  }while (isalpha(caracter) || isdigit(caracter) || caracter == '_');//mientras sea alpha, numerico o un guion bajo es valido
+    
+  //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
   printf("Identificador Aceptado \n");
   retroceder();
   
@@ -469,12 +467,11 @@ void otroTipo(){
 
                     if (isdigit(caracter)){
                         /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
-                        retroceder();
                         numerico();
-
                         //TODO: hacer un break para que salga de aqui
-
                     }
+
+                    retroceder();
 
             
                     

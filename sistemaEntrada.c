@@ -158,7 +158,7 @@ char sigCaracter(){
             }
         }else{
             //final del archivo de verdad
-            return EOF; //devuelvo el EOF del archivo
+            return EOF; //devuelvo el EOF del archivoff
         }
     }
 }

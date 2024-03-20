@@ -47,7 +47,6 @@ void numerico() {
 
   //en primer lugar vamos a separar los caracteres de incio 
   if (caracter == '0'){
-    printf("Estoy dentro \n");
     estado_num = 0;
   }else if (caracter =='.'){
     estado_num = 1;
@@ -60,7 +59,7 @@ void numerico() {
     switch (estado_num){
 
 
-        case 0: /*Es un cero por lo que despues solo le puede venir una x o X (en el caso de wilcoxon) o un punto */
+        case 0: /*Es un cero por lo que despues solo le puede venir una x o X (en el caso de wilcoxon) o un punto o un exponencial */
 
 
             caracter = sigCaracter();
@@ -78,8 +77,8 @@ void numerico() {
                     estado_num = 4;
                     break;
 
-                case '.': //en caso de que sea un punto estamos en un float del tipo 0.
-                    estado_num = 5;
+                case '.': //Automata que reconoce numeros hasta que llegue una e
+                    estado_num = 2;
                     break;
 
                 default:
@@ -118,14 +117,13 @@ void numerico() {
             /*Ahora debemos de comprobar que caracter fue el que nos saco ya que en funcion del tipo puede ser diferentes:*/
 
             if (caracter == '.'){// -Puede ser un . y ser un float ahora
-                printf("Voy a ser un float (leido = %c)\n",caracter);
-                //TODO; quitar esto
-                aceptado=1;
+                estado_num = 2; //despues del punto reconoce numeros enetros de todas formas
+                
 
             } else if (caracter == 'e' || caracter == 'E'){ //-Puede ser una e y ser un exponent float
-                printf("Voy a ser un exponencial (leido = %c)\n",caracter);
-                //TODO; quitar esto
-                aceptado=1;
+                /*Mandamos al automata que reconoce parte final de un exponencial*/
+                estado_num = 4;
+                
             }else { //-Puede ser un delimitador y hay que aceptar la cadena y retroceder
                 printf("Salí fuera con el caracter %c\n",caracter);
                 retroceder();
@@ -161,6 +159,70 @@ void numerico() {
             aceptado=1;
 
             break;
+
+        case 4: /*Final de exponencial, depues puede ser varias cosas diferentes un menos o un mas, o numeros seguidos*/
+
+             do{
+
+                caracter = sigCaracter();
+                printf("Caracter procesado %c\n",caracter);
+                
+                /*Comprobación de dos mases seguidos*/
+                if (caracter== '+'){
+                    caracter = sigCaracter();
+                    if (caracter == '+'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                /*Comprobación de dos menos seguidos*/
+                }else if (caracter== '-'){
+                    caracter = sigCaracter();
+                    if (caracter == '-'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                /*Comprobación de dos __ seguidos*/
+                }else if (caracter== '_'){
+                    caracter = sigCaracter();
+                    if (caracter == '_'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                }
+
+            }while (isdigit(caracter) || (caracter == '+') || (caracter == '-') || (caracter == '_'));
+
+            /*Debemos de retroceder para procesar el caracter*/
+            printf("Salí fuera con el caracter %c\n",caracter);
+            retroceder();
+            aceptado=1;
+
+            break;
+
+        case 5: //reconocer segunda parte de un float
+
+
+
+
+
+            break;
+
+
+
+
+            
 
     
 

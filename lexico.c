@@ -960,11 +960,21 @@ void otroTipo(){
 
 }
 
+// Función auxiliar que libera a memoria asociada a un lexema lido anteriormente e restablece os valores inicias
+void destruirComp() {
+    if (comp.lexema != NULL) {
+        free(comp.lexema);
+        comp.codigo = 0;
+        comp.lexema = NULL;
+    }
+}
+
 //funcion que devuelve al sintactico el siguiente componente lexico 
 
 compLexico sigCompLexico(){
 
     //vaciamos el anterior por si acaso
+    destruirComp();
 
   do{
 
@@ -1011,14 +1021,6 @@ compLexico sigCompLexico(){
 
 }
 
-// Función auxiliar que libera a memoria asociada a un lexema lido anteriormente e restablece os valores inicias
-void destruirComp() {
-    if (comp.lexema != NULL) {
-        free(comp.lexema);
-        comp.codigo = 0;
-        comp.lexema = NULL;
-    }
-}
 
 // Función que finaliza el analizador léxico
 void finalizarAnalizadorLexico() {

@@ -245,7 +245,7 @@ void saltarCaracter(){
 
         if (miBuffer.delantero == (TAM -2)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
             /*Adelantamos tanto el inicio como el buffer delantero*/
-            miBuffer.delantero+=2;
+            miBuffer.delantero++;
             miBuffer.inicio+=2;
             /*Cambiamos el bloque activo y cargamos*/
             alternarBloque();

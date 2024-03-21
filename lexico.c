@@ -432,6 +432,7 @@ void otroTipo(){
         case '#':
         
             comentarios_strings();
+            caracteresIgnorar=1;
 
             break;
         
@@ -515,6 +516,7 @@ void otroTipo(){
 
             }else{ //no es un igual, retrocedemos y devolvemos solo el igual
                 retroceder();
+                lexemaAceptadoConcodigo(IGUAL);
 
             }
             break;

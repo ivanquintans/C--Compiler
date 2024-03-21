@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import scipy.stats as st
 import math
 import random

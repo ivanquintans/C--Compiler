@@ -281,60 +281,71 @@ void aceptarLexema(compLexico *compActual){
 
     int tamLexema;
 
-    //varios casos posibles
 
-    //En caso de que el inicio y el fin esten en a o en b
-    if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
-        
-        tamLexema = (miBuffer.delantero - miBuffer.inicio) +1;
-        compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
+    if (miBuffer.tamLexemaActual <= (TAM -1)){ //si el tamaño del lexema es menor que 15 o igual
 
-        //hacemos la copia en el lexema del buffer que queremos
-        //mas la posición inicio para asi empezar desde donde queremos
+        //varios casos posibles
 
-        if (miBuffer.current == 0){
-            strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
-            compActual->lexema[TAM -1] = '\0'; //evitar errores
-        }else {
-            strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio, tamLexema);
-            compActual->lexema[TAM -1] = '\0'; //evitar errores
+        //En caso de que el inicio y el fin esten en a o en b
+        if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
+            
+            tamLexema = (miBuffer.delantero - miBuffer.inicio) +1;
+            compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
+
+            //hacemos la copia en el lexema del buffer que queremos
+            //mas la posición inicio para asi empezar desde donde queremos
+
+            if (miBuffer.current == 0){
+                strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
+                compActual->lexema[TAM -1] = '\0'; //evitar errores
+            }else {
+                strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio, tamLexema);
+                compActual->lexema[TAM -1] = '\0'; //evitar errores
+            }
+        //Inicio en A y delantero en B
+        }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
+
+            //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
+            int tamPrimeraparte = ((tamLexema -2) - miBuffer.inicio) +1;
+            int tamSegundaparte = (miBuffer.delantero - TAM) +1;
+
+            //el tamaño del lexema es la suma de los dos tamaños
+            tamLexema = tamPrimeraparte + tamSegundaparte;
+            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+
+            //copiamos la parte del bloque A
+            strncpy(compActual->lexema,miBuffer.A + miBuffer.inicio, tamPrimeraparte);
+            //copiamos la parte del bloque B
+            strncpy(compActual->lexema + tamPrimeraparte,miBuffer.B, tamSegundaparte); //le restamos al delantero la parte del buffer A
+            //se mete el '\0'
+            compActual->lexema[tamLexema] = '\0';
+
+        //Inicio en B y delantero en A
+        }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
+
+            int tamPrimeraparte = ((2 * TAM -2)- miBuffer.inicio)+1;
+            int tamSegundaparte = (miBuffer.delantero)+1;
+
+            //el tamaño del lexema es la suma de los dos tamaños
+            tamLexema = tamPrimeraparte + tamSegundaparte;
+            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+
+            //copiamos la parte del lexema del bloque B
+            strncpy(compActual->lexema,miBuffer.B + (miBuffer.inicio - TAM),tamPrimeraparte); //el numero a copiar es el tamaño de lexema -1 menos la posicón del buffer B
+            //copiamos la parte del bloque A
+            strncpy(compActual->lexema + tamPrimeraparte, miBuffer.A, tamSegundaparte );
+            //se mete el '\0'
+            compActual->lexema[tamLexema] = '\0';
+
         }
-    //Inicio en A y delantero en B
-    }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
 
-        //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
-        int tamPrimeraparte = ((tamLexema -2) - miBuffer.inicio) +1;
-        int tamSegundaparte = (miBuffer.delantero - TAM) +1;
+    }else{
+        free(compActual->lexema);
+        compActual->lexema = NULL;
+        //TODO Lanzar error
 
-        //el tamaño del lexema es la suma de los dos tamaños
-        tamLexema = tamPrimeraparte + tamSegundaparte;
-        compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
-
-        //copiamos la parte del bloque A
-        strncpy(compActual->lexema,miBuffer.A + miBuffer.inicio, tamPrimeraparte);
-        //copiamos la parte del bloque B
-        strncpy(compActual->lexema + tamPrimeraparte,miBuffer.B, miBuffer.delantero - (TAM-1)); //le restamos al delantero la parte del buffer A
-        //se mete el '\0'
-        compActual->lexema[miBuffer.delantero] = '\0';
-
-    //Inicio en B y delantero en A
-    }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
-
-        tamLexema = (2*TAM-1) - miBuffer.inicio + miBuffer.delantero;
-
-         int tamPrimeraparte = (tamLexema -1) - (miBuffer.inicio - TAM);
-
-        //copiamos la parte del lexema del bloque B
-        strncpy(compActual->lexema,miBuffer.B + (miBuffer.inicio - TAM),tamPrimeraparte); //el numero a copiar es el tamaño de lexema -1 menos la posicón del buffer B
-        //copiamos la parte del bloque A
-        strncpy(compActual->lexema + tamPrimeraparte, miBuffer.A, miBuffer.delantero +1 );
-        //se mete el '\0'
-        compActual->lexema[tamPrimeraparte + miBuffer.delantero+1] = '\0';
-
-    }
+    }   
 
     //una vez aceptado el lexema debemos de saltarlo
     saltarLexema();
-    printf("El valor de inicio es %d\n",miBuffer.inicio);
-    printf("El valor de delantero es %d\n",miBuffer.delantero);
 }

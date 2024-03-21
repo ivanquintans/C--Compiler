@@ -124,7 +124,6 @@ char sigCaracter(){
         miBuffer.tamLexemaActual++; //en caso de no ser la posición cero, muevo el puntero y luego consumo
         caracter_actual = miBuffer.A[miBuffer.delantero];
         
-
         /*Para comprobar si se llego al final del archivo vamos a comprobar 
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
@@ -372,15 +371,21 @@ void aceptarLexema(compLexico *compActual, int identifcador){
         /*Si delantero esta en el buffer A imprimimos la partde del buffer a hasta delantero*/
         if (miBuffer.delantero < TAM -1){
             /*Si estoy en el buffer a imprimimos des*/
+
+            /*Además debemos comprobar que no se este devolviendo 0 caracteter*/
+        
             tamLexema = miBuffer.delantero +1;
+            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
             strncpy(compActual->lexema, miBuffer.A, tamLexema); 
-            compActual->lexema[tamLexema -1] = '\0'; //evitar errores
+            compActual->lexema[tamLexema] = '\0'; //evitar errores
 
         //si delantero esta en el buffer b lo contrario    
         }else {
+            
             tamLexema = (miBuffer.delantero - TAM)+1;
+            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
             strncpy(compActual->lexema, miBuffer.B, tamLexema);
-            compActual->lexema[tamLexema -1] = '\0'; //evitar errores
+            compActual->lexema[tamLexema] = '\0'; //evitar errores
         }
     }   
 

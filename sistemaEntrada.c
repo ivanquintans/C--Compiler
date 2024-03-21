@@ -49,7 +49,7 @@ void cargarBloque(){
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
 
-        for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
+        //for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
     }else{ //Si estamos en el bloque b
 
@@ -62,7 +62,7 @@ void cargarBloque(){
 
         }
         miBuffer.B[TAM -1] = '\0';
-        for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
+        //for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
 
 
   }
@@ -133,7 +133,7 @@ char sigCaracter(){
                 /*En el caso de que vengamos de retroceder en el buffer*/
                 alternarBloque();
                 if(miBuffer.no_cargar == 0){
-                    printf("Estoy Aqui\n");
+                    //printf("Estoy Aqui\n");
                     cargarBloque();
                 }
                 /*Devolvemos el valor para que se cargue*/
@@ -241,6 +241,9 @@ void saltarLexema() {
 
 void saltarCaracter(){
 
+    //printf("Mi buffer inicio es %d y mibuffer delantero es %d\n",miBuffer.inicio,miBuffer.delantero);
+
+
     if (miBuffer.current == 0) {  // Si estamos en el buffer a
 
         if (miBuffer.delantero == (TAM -2)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
@@ -257,7 +260,12 @@ void saltarCaracter(){
     } else { // Si estamos en el buffer b
 
         if (miBuffer.delantero == (2 * TAM)-2){
-            alternarBloque();
+
+            /*Alternamos el bloque pero no dejamos el puntero en la posición 0 ya que no estamos devlviendo el caracter
+            Por lo que no llamas a la funcion alternar bloque*/
+
+            miBuffer.current=0;
+            miBuffer.delantero=-1;
             cargarBloque();
             miBuffer.inicio=0;
 
@@ -284,7 +292,7 @@ void aceptarLexema(compLexico *compActual){
 
     int tamLexema=0;
 
-    printf("El tamaño del lexema actual es de %d\n",miBuffer.tamLexemaActual);
+    //printf("El tamaño del lexema actual es de %d\n",miBuffer.tamLexemaActual);
 
 
     if (miBuffer.tamLexemaActual <= (TAM -1)){ //si el tamaño del lexema es menor que 15 o igual
@@ -299,6 +307,8 @@ void aceptarLexema(compLexico *compActual){
 
             //hacemos la copia en el lexema del buffer que queremos
             //mas la posición inicio para asi empezar desde donde queremos
+
+            //printf("Mi buffer inicio es %d y mibuffer delantero es %d\n",miBuffer.inicio,miBuffer.delantero);
 
             if (miBuffer.current == 0){
                 strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
@@ -328,7 +338,7 @@ void aceptarLexema(compLexico *compActual){
         //Inicio en B y delantero en A
         }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
 
-            printf("Entre aqui xd\n");
+            //printf("Entre aqui xd\n");
 
             int tamPrimeraparte = ((2 * TAM -2)- miBuffer.inicio)+1;
             int tamSegundaparte = (miBuffer.delantero)+1;

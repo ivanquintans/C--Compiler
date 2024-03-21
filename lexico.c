@@ -30,7 +30,7 @@ void alfanumerico() {
 
   do{
     caracter = sigCaracter();
-    printf("Caracter Procesado %c\n",caracter);
+    //printf("Caracter Procesado %c\n",caracter);
   }while (isalpha(caracter) || isdigit(caracter) || caracter == '_');//mientras sea alpha, numerico o un guion bajo es valido
     
   //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
@@ -348,7 +348,7 @@ void comentarios_strings(){
                     caracter = sigCaracter();
                     //printf("Caracter procesado %c\n",caracter);
                     if (caracter == '"'){ //encontrado el string literal largo
-                        printf("estoy aqui\n");
+                        //printf("estoy aqui\n");
                         lexemaAceptadoConcodigo(STRING);
                     }else{
                         estado = 1;
@@ -472,7 +472,7 @@ void otroTipo(){
             break;
 
         case ',':
-            
+            lexemaAceptadoConcodigo(COMA);
             break;
 
         case '.':
@@ -498,7 +498,7 @@ void otroTipo(){
             break;
 
         case ';':
-            
+            lexemaAceptadoConcodigo(PUNTOCOMA);
             break;
 
         case '!':
@@ -627,13 +627,12 @@ void otroTipo(){
         
 
         default:
-                //printf("Estoy aqui\n");
                 saltarCaracter();
-                //mostrarInicioYDelantero();      //      Está pensado para os \t, \n e espacios do código
+                //mostrarInicioYDelantero();      //      Está pensado para los \t, \n e espacios do código
                 if (caracter == '\n') {
                     linea++;
                 }
-                printf("Estamos en la linea %d\n",linea);
+                //printf("Estamos en la linea %d\n",linea);
                 caracteresIgnorar=1;
         
 
@@ -823,7 +822,7 @@ compLexico sigCompLexico(){
   do{
 
     caracter = sigCaracter();
-    printf("Caracter leido %c\n",caracter);
+    //printf("Caracter leido %c\n",caracter);
     
 
     //si leo el /0 o el EOF paso al siguiente caracter 

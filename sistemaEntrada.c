@@ -4,6 +4,7 @@
 
 #include "sistemaEntrada.h"
 #include "lexico.h"
+#include "definiciones.h"
 #define TAM 16
 FILE *archivo;
 char caracter_actual;
@@ -287,7 +288,7 @@ void mostrarInicioYDelantero(){
 }
 
 
-void aceptarLexema(compLexico *compActual){
+void aceptarLexema(compLexico *compActual, int identifcador){
 
     //TODO: REHACER Y COMPROBAR LOS IFS DE  LOS CASOS AISLADOSj
 
@@ -313,10 +314,10 @@ void aceptarLexema(compLexico *compActual){
 
             if (miBuffer.current == 0){
                 strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
-                compActual->lexema[TAM -1] = '\0'; //evitar errores
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
             }else {
                 strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio - TAM, tamLexema);
-                compActual->lexema[TAM -1] = '\0'; //evitar errores
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
             }
         //Inicio en A y delantero en B
         }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
@@ -359,9 +360,28 @@ void aceptarLexema(compLexico *compActual){
 
     }else{
         printf("Estoy donde el tamaño es mayor\n");
-        compActual->codigo = NULL;
-        //TODO Lanzar error
 
+        if (identifcador == 1){ //en caso de que sea un identificador
+            //ponemos el codigo a null ya que esto permite no insertar el elemento en la tabla de simbolos
+            compActual->codigo = ERROR;
+            
+        } //no es un identificador simplemente imprimimos
+
+        /*Lo que hacemos es imprimir la parte del bloque donde se encuentra delantero (parte final)*/
+        
+        /*Si delantero esta en el buffer A imprimimos la partde del buffer a hasta delantero*/
+        if (miBuffer.delantero < TAM -1){
+            /*Si estoy en el buffer a imprimimos des*/
+            tamLexema = miBuffer.delantero +1;
+            strncpy(compActual->lexema, miBuffer.A, tamLexema); 
+            compActual->lexema[tamLexema -1] = '\0'; //evitar errores
+
+        //si delantero esta en el buffer b lo contrario    
+        }else {
+            tamLexema = (miBuffer.delantero - TAM)+1;
+            strncpy(compActual->lexema, miBuffer.B, tamLexema);
+            compActual->lexema[tamLexema -1] = '\0'; //evitar errores
+        }
     }   
 
     //una vez aceptado el lexema debemos de saltarlo

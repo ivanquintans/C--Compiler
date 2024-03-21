@@ -3,8 +3,7 @@
 #include <string.h>
 #include "lexico.h"
 
-// Función que acepta o lexema que se está lendo actualmente
-void aceptarLexema(compLexico *comp);
+
 
 //funcion que inicializa el sistema de entrada
 void iniciarSistemaEntrada();
@@ -21,7 +20,7 @@ void saltarCaracter();
 //funcion que se encarga de colocar bien los punteros una vez se salta un lexema
 void saltarLexema();
 
-void aceptarLexema(compLexico *compActual);
+void aceptarLexema(compLexico *compActual, int identificador);
 
 void finalizarSistemaEntrada();
 

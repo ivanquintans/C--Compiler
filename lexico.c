@@ -16,7 +16,7 @@ compLexico comp = {0, NULL};
 
 void lexemaAceptadoConcodigo(int codigo_componente){
 
-    aceptarLexema(&comp);
+    aceptarLexema(&comp,0);
     comp.codigo = codigo_componente;
     aceptado=1;
 
@@ -35,10 +35,10 @@ void alfanumerico() {
     
   //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
   retroceder();
-  aceptarLexema(&comp);
+  aceptarLexema(&comp,1);
 
   /*No podemos llamar a la funcion auxiliar ya que esta recibe el codigo y necesitamos buscar en la tabla de simbolos*/
-  if (comp.codigo != NULL){
+  if (comp.codigo != ERROR){
     insertarTablaSimbolos(&comp);
   }
   aceptado = 1;
@@ -373,7 +373,7 @@ void comentarios_strings(){
                 retroceder();
 
                 saltado=1;
-                printf("Comentario Saltado\n");
+                //printf("Comentario Saltado\n");
                 saltarLexema();
                 
 

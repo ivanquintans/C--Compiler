@@ -21,6 +21,9 @@ void saltarCaracter();
 //funcion que se encarga de colocar bien los punteros una vez se salta un lexema
 void saltarLexema();
 
-//funcion auxiliar para mostrar la posicion actual de delantero y de inicio
-void mostrarInicioYDelantero();
+void aceptarLexema(compLexico *compActual);
+
+void finalizarSistemaEntrada();
+
+
 

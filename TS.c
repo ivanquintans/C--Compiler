@@ -45,6 +45,8 @@ void imprimirTablaSimbolos(){
 }
 
 void finalizarTablaSimbolos(){
+    //imprimimos la tabla de simbolos
+    imprimirTablaSimbolos();
     //destruimos el arbol y la tabla de simbolos
     destruirAbb(&tablaSimbolos);
 }

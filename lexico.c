@@ -35,8 +35,14 @@ void alfanumerico() {
     
   //como se procesa de manera correcta debemos de aceptar el lexema y retroceder
   retroceder();
-  lexemaAceptadoConcodigo(ID);
-  
+  aceptarLexema(&comp);
+
+  /*No podemos llamar a la funcion auxiliar ya que esta recibe el codigo y necesitamos buscar en la tabla de simbolos*/
+  if (comp.codigo != NULL){
+    insertarTablaSimbolos(&comp);
+  }
+  aceptado = 1;
+
 }
 
 void numerico() {
@@ -299,7 +305,7 @@ void comentarios_strings(){
     if (caracter == '#'){
         estado = 0;
 
-    }else{
+    }else if (caracter == '"'){
         //pedimos siguiente carater
         caracter = sigCaracter();
 
@@ -321,6 +327,31 @@ void comentarios_strings(){
             estado=3; //estado no aceptado
             //puede que sea un string
         }
+
+    }else{ //son comillas simples
+
+        //pedimos siguiente carater
+        caracter = sigCaracter();
+
+        if (caracter == '\''){ 
+            caracter = sigCaracter(); //llevamos ""
+            if (caracter == '\''){
+                //vamos al automata que procesa caracteres hasta que encuentra tres comillas simples
+                estado = 5; //llevamos '''
+                
+            }else{
+                /*Dos comillas seguidas de un caracter diferente, string vacio*/
+                 //TODO: dos comillas tiene que reconocerse como string
+                estado = 8;
+            }
+            estado = 5; //compramos si viene otra comilla
+        }else{ 
+            /*Llevamos una comilla seguida de un caracter diferente (posible string)*/
+            //TODO: una comilla solo tambien tiene que procesarlo el automata de strings
+            estado=7; //estado no aceptado
+            //puede que sea un string
+        }
+
     }
 
     while (saltado==0 && error == 0 && aceptado == 0){
@@ -440,8 +471,94 @@ void comentarios_strings(){
 
                 break;
 
-            
-            
+            case 5:
+
+                //comentario multilinea
+
+                do {
+                    caracter = sigCaracter();
+                    //printf("Caracter procesado %c\n",caracter);
+
+                //encontro la primera comilla aun le faltan dos comillas mas para aceptarlo    
+                }while (caracter != '\'' && caracter != EOF);
+                
+                //comprobamos que se haya cerrado correctamente lo que queremos
+
+                if (caracter == EOF) {
+                    printf("Error no se ha cerrado el comentario multilinea");
+                    error=1;
+                }else{
+                    //falta por procesar todavia dos comillas 
+                    estado = 2;
+                   
+                }
+
+
+                break;
+
+            case 6: //string literal largo multilinea, nos faltan dos comillas por procesar
+
+                caracter = sigCaracter(); 
+                //printf("Caracter procesado %c\n",caracter);
+                
+
+                if (caracter =='\''){//Llevamos ""
+                    caracter = sigCaracter();
+                    //printf("Caracter procesado %c\n",caracter);
+                    if (caracter == '\''){ //encontrado el string literal largo
+                        //printf("estoy aqui\n");
+                        lexemaAceptadoConcodigo(STRING);
+                    }else{
+                        estado = 1;
+                    }
+                }else{
+                    //no se cerro de manera correcta asi que tenemos que esperar de nuevo tres """"
+                    estado = 1;
+                }
+
+                break;
+
+            //TODO: Comprobar bien estos dos casos
+
+            case 7: //una comilla seguida de un caracter diferente a una comilla
+
+            /*Debemos de leer caracteres hasta que leeamos una comilla 
+            que significa que es un string. Tener cuenta el caso aislado de escapado de comillas con una barra */
+
+                /*Caracter procesado */
+
+                //printf("Caracter procesado %c\n",caracter);
+
+                 do {
+                    caracter = sigCaracter();
+                    //printf("Caracter procesado %c\n",caracter);
+
+                //encontro la primera comilla aun le faltan dos comillas mas para aceptarlo    
+                }while (caracter != '\'' && caracter != EOF && caracter != '\\');
+
+                if (caracter == '\''){
+                    //si se leyo una comilla ya se cierra el string  y lo aceptamos
+                    lexemaAceptadoConcodigo(STRING);
+                }else if (caracter == '\\'){
+                    /*Tenemos que procesar el siguiente caracter para evitar los escapados
+                    Como por ejemplo:
+                    \""*/
+                    caracter = sigCaracter();
+                    /*Una vez pillado el siguiente caracter seguimos en el mismo automata esperando la comilla*/
+    
+                }else{ //es un eof
+                    printf("Error no se ha cerrado el comentario multilinea");
+                    error = 1;
+                }
+
+                break;
+
+            case 8: //doble comilla es un string vacio
+
+            //Al encontrar la doble comilla ya aceptamos la cadena
+                aceptado = 1;
+                break;
+
             default:
 
             //TODO: Rellenar el caso de dafault
@@ -470,6 +587,7 @@ void otroTipo(){
 
         //si es una barra o una almohadilla lo mandamos al automata de comentarios
         case '"':
+        case '\'':
         case '#':
         
             comentarios_strings();
@@ -846,6 +964,8 @@ void otroTipo(){
 
 compLexico sigCompLexico(){
 
+    //vaciamos el anterior por si acaso
+
   do{
 
     caracter = sigCaracter();
@@ -889,4 +1009,18 @@ compLexico sigCompLexico(){
 
   return comp;
 
+}
+
+// Función auxiliar que libera a memoria asociada a un lexema lido anteriormente e restablece os valores inicias
+void destruirComp() {
+    if (comp.lexema != NULL) {
+        free(comp.lexema);
+        comp.codigo = 0;
+        comp.lexema = NULL;
+    }
+}
+
+// Función que finaliza el analizador léxico
+void finalizarAnalizadorLexico() {
+    destruirComp();
 }

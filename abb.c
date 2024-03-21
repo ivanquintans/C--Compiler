@@ -123,8 +123,10 @@ void buscarNodoAbb(TABB A, TIPOCLAVE cl, TIPOELEMENTO *nodo) {
    con la misma clave en el arbol. */
 void insertarElementoAbb(TABB *A, TIPOELEMENTO E) {
     if (esAbbVacio(*A)) {
-        *A = (TABB) malloc(sizeof (struct celda));
-        (*A)->info = E;
+        *A = malloc(sizeof (struct celda));
+        (*A)->info.codigo = E.codigo;
+        (*A)->info.lexema = malloc((strlen(E.lexema)));
+        strcpy((*A)->info.lexema, E.lexema);
         (*A)->izq = NULL;
         (*A)->der = NULL;
         return;

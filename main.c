@@ -22,8 +22,15 @@ int main(int argc, char **argv)
   iniciarSistemaEntrada(argv[1]);
   //Inicializamos el sintactico
   inicializarSintactico();
- 
 
+  /*hay que finalizar la tabla de simbolos el sistema de entrada y el lexico*/
+
+  finalizarTablaSimbolos();
+
+  //finalizarAnalizadorLexico();
+
+  finalizarSistemaEntrada();
+   
 
   exit(0);
 }

@@ -17,7 +17,5 @@ void inicializarSintactico() {
 
 
     printf("Saliendo del programa\n");
-        
 
-    //finalizarAnalizadorLexico();
 }

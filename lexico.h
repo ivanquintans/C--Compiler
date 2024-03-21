@@ -7,14 +7,15 @@ typedef struct{
   char *lexema;
 } compLexico;
 
-// Función que inicia o analizador léxico
-void iniciarAnalizadorLexico();
 
 // Función que le o seguinte compoñente léxico do código fonte
 compLexico sigCompLexico();
 
 //funcion auxiliar que se encarga de aceptar uma cadena
 void lexemaAceptadoConcodigo(int codigo_componente);
+
+
+void finalizarAnalizadorLexico();
 
 
 

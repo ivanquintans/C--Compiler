@@ -107,6 +107,7 @@ void iniciarSistemaEntrada(char *fichero){
 // funcion que se encarga de cerrar el archivo
 void finalizarSistemaEntrada(){
     fclose(archivo);
+
 }
 
 // funcion que se encarga de enviar un caracter al analizadorlexico
@@ -358,8 +359,7 @@ void aceptarLexema(compLexico *compActual){
 
     }else{
         printf("Estoy donde el tamaño es mayor\n");
-        free(compActual->lexema);
-        compActual->lexema = NULL;
+        compActual->codigo = NULL;
         //TODO Lanzar error
 
     }   

@@ -14,6 +14,7 @@ typedef struct {
     int inicio;
     int delantero;
     int current; //Si 0 A sino B
+    int no_cargar;
 }Buffer;
 
 Buffer miBuffer;
@@ -23,6 +24,7 @@ void incializarBuffer(){
     miBuffer.inicio=0;
     miBuffer.delantero=0;
     miBuffer.current=0; //A
+    miBuffer.no_cargar=0;
 }
 
 //cargamos el primero de los bloques
@@ -124,8 +126,13 @@ char sigCaracter(){
             if (caracter_actual!= '\0'){ //si    
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
+                /*En el caso de que vengamos de retroceder en el buffer*/
                 alternarBloque();
-                cargarBloque();
+                if(!miBuffer.no_cargar){
+                    cargarBloque();
+                }
+                /*Devolvemos el valor para que se cargue*/
+                miBuffer.no_cargar=0;
                 /*Reajustamos el valor a devolver*/
                 miBuffer.delantero++;
                 caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //16 - 16
@@ -152,7 +159,12 @@ char sigCaracter(){
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
-                cargarBloque();
+                /*En el caso de que vengamos de retroceder en el buffer*/
+                if(!miBuffer.no_cargar){
+                    cargarBloque();
+                }
+                /*Devolvemos el valor para que se cargue*/
+                miBuffer.no_cargar=0;
                 //devuelvo ya el caracter siguiente
                 caracter_actual = miBuffer.A[miBuffer.delantero];
                 return caracter_actual;
@@ -166,12 +178,19 @@ char sigCaracter(){
 
 void retroceder(){
 
+    /*En el caso de retroceder debemos de tener en cuenta de que si retrocedemos
+    un bloque despues no debemos de volver a cargar este
+    
+    Para eso empleamos el atributo no cargar que se encarga de controlar esta situación*/
+
     /*Si estoy en el bloque A*/
 
     if (miBuffer.current == 0){
         if (miBuffer.delantero == 0){
             alternarBloque();
             miBuffer.delantero == 2* TAM -2; //ultima posición del buffer b antes del \0
+            /*Valor que se encarga de que no sobrescriba el buffer*/
+            miBuffer.no_cargar=1;
         }else{
           miBuffer.delantero--;
         }
@@ -180,31 +199,26 @@ void retroceder(){
         if (miBuffer.delantero= TAM){
             miBuffer.current = 0;
             miBuffer.delantero -= 2; //ultima posición del buffer a antes del \0
+             /*Valor que se encarga de que no sobrescriba el buffer*/
+            miBuffer.no_cargar=1;
         }else{
             miBuffer.delantero--;
         }
-
-        
-
     }
-
-    
 }
 
 void saltarLexema() {
 
-    //TODO: REHACER
-
     /*Funcion que se encarga de actualizar el valor del inicio*/
 
-    if (miBuffer.delantero == (2 * TAM)-1) {
+    if (miBuffer.delantero == TAM -2){ //si el valor es la penultima posición del buffer a
+        miBuffer.inicio = miBuffer.delantero + 2;
+    }else if (miBuffer.delantero == (2 * TAM)-2){ // si el valor es la penultima del buffer b
         miBuffer.inicio = 0;
     } else {
-        miBuffer.inicio = miBuffer.delantero;
+        miBuffer.inicio = miBuffer.delantero + 1;
     }
 
-    printf("El valor de inicio es %d\n",miBuffer.inicio);
-    printf("El valor de delantero es %d\n",miBuffer.delantero);
 }
 
 
@@ -212,7 +226,7 @@ void saltarCaracter(){
 
     if (miBuffer.current == 0) {  // Si estamos en el buffer a
 
-        if (miBuffer.delantero == (TAM -1)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
+        if (miBuffer.delantero == (TAM -2)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
             /*Adelantamos tanto el inicio como el buffer delantero*/
             miBuffer.delantero+=2;
             miBuffer.inicio+=2;
@@ -223,10 +237,10 @@ void saltarCaracter(){
             miBuffer.delantero++;
             miBuffer.inicio++;
         }
-        
+
     } else { // Si estamos en el buffer b
 
-        if (miBuffer.delantero == (2 * TAM)-1){
+        if (miBuffer.delantero == (2 * TAM)-2){
             alternarBloque();
             cargarBloque();
             miBuffer.inicio=0;
@@ -247,6 +261,8 @@ void mostrarInicioYDelantero(){
 
 
 void aceptarLexema(compLexico *compActual){
+
+    //TODO: REHACER Y COMPROBAR LOS IFS DE  LOS CASOS AISLADOSj
 
     int tamLexema;
 

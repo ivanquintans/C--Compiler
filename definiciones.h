@@ -81,6 +81,9 @@
 
 #define STRING 370
 
+//TODO: CAMBIAR EN FUNCION DEL TIPO QUE SEA
+#define NUMERO 370
+
 
 
 

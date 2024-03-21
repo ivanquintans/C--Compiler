@@ -87,14 +87,18 @@ void numerico() {
                     estado_num = 2;
                     break;
 
-                default:
-                    //TODO: Hacer todos los defaults
+                default: //si llega cualquier caracter que no es ese retrocedemos y aceptamos cadena
+                    retroceder();
+                    lexemaAceptadoConcodigo(NUMERO);
                     break;
             }
 
             break;
       
         case 1: /*El primer digito es un punto*/
+
+
+            //TODO: Hacer si el primer digito es un punto
 
     
 
@@ -133,7 +137,8 @@ void numerico() {
             }else { //-Puede ser un delimitador y hay que aceptar la cadena y retroceder
                 //printf("Salí fuera con el caracter %c\n",caracter);
                 retroceder();
-                aceptado = 1;
+                lexemaAceptadoConcodigo(NUMERO);
+                
             }
 
             break;
@@ -213,7 +218,7 @@ void numerico() {
             /*Debemos de retroceder para procesar el caracter*/
             //printf("Salí fuera con el caracter %c\n",caracter);
             retroceder();
-            aceptado=1;
+            lexemaAceptadoConcodigo(NUMERO);
 
             break;
 
@@ -439,27 +444,27 @@ void otroTipo(){
         /*Casos de aceptacion directa de delimitadores y operadores*/
         
         case '(':
-            
+            lexemaAceptadoConcodigo(PARENTESISABIERTO);  
             break;
 
         case ')':
-            
+            lexemaAceptadoConcodigo(PARENTESISCERRADO);
             break;
 
         case '[':
-            
+            lexemaAceptadoConcodigo(CORCHETEABIERTO);
             break;
         
         case ']':
-            
+            lexemaAceptadoConcodigo(CORCHETECERRADO);
             break;
         
         case '{':
-            
+            lexemaAceptadoConcodigo(LLAVEABIERTA);
             break;
 
         case '}':
-            
+            lexemaAceptadoConcodigo(LLAVECERRADA);
             break;
         
         case '~':
@@ -528,6 +533,7 @@ void otroTipo(){
 
             }else{ //no es un igual, retrocedemos y devolvemos solo el :
                 retroceder();
+                lexemaAceptadoConcodigo(DOSPUNTOS);
 
             }
             break;

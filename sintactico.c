@@ -13,8 +13,6 @@ void inicializarSintactico() {
         if (comp.lexema != NULL) { 
             printf("< %d, %s >\n", comp.codigo, comp.lexema);
         }
-    
-
     }while (comp.codigo !=EOF);
 
 

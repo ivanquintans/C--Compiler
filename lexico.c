@@ -98,7 +98,16 @@ void numerico() {
         case 1: /*El primer digito es un punto*/
 
         /*En caso de ser un punto lo unico que le puede serguir son digitos y guiones bajos*/
+        caracter = sigCaracter();
+
+        if (isdigit(caracter)){ // si lo que le sigue es un numero lo mandamos al automata de floats
+            retroceder();    
             estado_num=5;
+        }else{ //si no es un delimitador
+            retroceder();
+            lexemaAceptadoConcodigo('.');
+        }
+           
             break;
 
         case 2: //sigue siendo un numero
@@ -162,9 +171,8 @@ void numerico() {
             }while (isxdigit(caracter) || (caracter == '_'));
 
             /*Debemos de retroceder para procesar el caracter*/
-            printf("Salí fuera con el caracter %c\n",caracter);
             retroceder();
-            aceptado=1;
+            lexemaAceptadoConcodigo(NUMERO);
 
             break;
 
@@ -505,25 +513,8 @@ void otroTipo(){
             break;
 
         case '.':
-
-            /*Debemos comprobar si el siguiente caracacter es un digito*/
-            caracter = sigCaracter();
-
-            if (isdigit(caracter)){
-                /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
-                retroceder();
-                numerico();
-                //TODO: hacer un break para que salga de aqui
-            /*Si no es un numero lo siguiente aceptamos el delimitador*/
-            }else{
-                retroceder();
-                lexemaAceptadoConcodigo('.');
-            }
-
-            
-
-    
-            
+            /*El punto lo gestionamos en el automata numérico*/
+            lexemaAceptadoConcodigo('.');
             break;
 
         case ';':
@@ -865,7 +856,7 @@ compLexico sigCompLexico(){
 
     if (caracter != '\0' && caracter != EOF) {
 
-        if (isdigit(caracter)){
+        if (isdigit(caracter) || caracter == '.'){
             numerico();
             //en caso de ser identificador
         }else if (isalpha(caracter) || caracter == '_'){

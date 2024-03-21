@@ -15,6 +15,8 @@ typedef struct {
     int delantero;
     int current; //Si 0 A sino B
     int no_cargar;
+    //posible solucion para controlar el tam del lexema
+    int tamLexemaActual; //se aumenta cada vez que se actualiza el valor de delantero
 }Buffer;
 
 Buffer miBuffer;
@@ -25,6 +27,7 @@ void incializarBuffer(){
     miBuffer.delantero=0;
     miBuffer.current=0; //A
     miBuffer.no_cargar=0;
+    miBuffer.tamLexemaActual=0;
 }
 
 //cargamos el primero de los bloques
@@ -114,7 +117,8 @@ char sigCaracter(){
 
         /*Como mi estrategia es muevo puntero y luego leo si estamos en la posición cero no hacemos nada*/
         if (miBuffer.delantero!=0){
-            miBuffer.delantero++; //en caso de no ser la posición cero, muevo el puntero y luego consumo
+            miBuffer.delantero++;
+            miBuffer.tamLexemaActual++; //en caso de no ser la posición cero, muevo el puntero y luego consumo
         }
 
         caracter_actual = miBuffer.A[miBuffer.delantero];
@@ -135,6 +139,7 @@ char sigCaracter(){
                 miBuffer.no_cargar=0;
                 /*Reajustamos el valor a devolver*/
                 miBuffer.delantero++;
+                miBuffer.tamLexemaActual++;
                 caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //16 - 16
                 return caracter_actual;
                 
@@ -149,6 +154,7 @@ char sigCaracter(){
 
     }else{
         miBuffer.delantero++;
+        miBuffer.tamLexemaActual++;
         caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //sirve para modular el segundo buffer
 
         /*Para comprobar si se llego al final del archivo vamos a comprobar 
@@ -205,6 +211,9 @@ void retroceder(){
             miBuffer.delantero--;
         }
     }
+
+     /*Si saltamos un lexema reseteamos el valor de lexema*/
+    miBuffer.tamLexemaActual--;
 }
 
 void saltarLexema() {
@@ -218,6 +227,9 @@ void saltarLexema() {
     } else {
         miBuffer.inicio = miBuffer.delantero + 1;
     }
+
+    /*Si saltamos un lexema reseteamos el valor de lexema*/
+    miBuffer.tamLexemaActual=0;
 
 }
 
@@ -251,6 +263,9 @@ void saltarCaracter(){
         }
         
     }
+
+     /*Si saltamos un lexema reseteamos el valor de lexema*/
+    miBuffer.tamLexemaActual=0;
    
 }
 
@@ -270,7 +285,8 @@ void aceptarLexema(compLexico *compActual){
 
     //En caso de que el inicio y el fin esten en a o en b
     if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
-        tamLexema = (miBuffer.delantero-1) - miBuffer.inicio;
+        
+        tamLexema = (miBuffer.delantero - miBuffer.inicio) +1;
         compActual->lexema = malloc (tamLexema +1); //reservamos memoria para el lexema
 
         //hacemos la copia en el lexema del buffer que queremos
@@ -286,12 +302,15 @@ void aceptarLexema(compLexico *compActual){
     //Inicio en A y delantero en B
     }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
 
-        tamLexema = miBuffer.delantero - miBuffer.inicio;
+        //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
+        int tamPrimeraparte = ((tamLexema -2) - miBuffer.inicio) +1;
+        int tamSegundaparte = (miBuffer.delantero - TAM) +1;
+
+        //el tamaño del lexema es la suma de los dos tamaños
+        tamLexema = tamPrimeraparte + tamSegundaparte;
         compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
 
-        //copiamos la parte del Bloque A y luego le concatenemos la parte del bloque B
-        int tamPrimeraparte = ((tamLexema -1) - miBuffer.inicio);
-
+        //copiamos la parte del bloque A
         strncpy(compActual->lexema,miBuffer.A + miBuffer.inicio, tamPrimeraparte);
         //copiamos la parte del bloque B
         strncpy(compActual->lexema + tamPrimeraparte,miBuffer.B, miBuffer.delantero - (TAM-1)); //le restamos al delantero la parte del buffer A

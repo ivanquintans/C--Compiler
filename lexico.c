@@ -84,7 +84,7 @@ void numerico() {
                     break;
 
                 case '.': //Automata que reconoce numeros hasta que llegue una e
-                    estado_num = 2;
+                    estado_num = 5;
                     break;
 
                 default: //si llega cualquier caracter que no es ese retrocedemos y aceptamos cadena
@@ -97,11 +97,8 @@ void numerico() {
       
         case 1: /*El primer digito es un punto*/
 
-
-            //TODO: Hacer si el primer digito es un punto
-
-    
-
+        /*En caso de ser un punto lo unico que le puede serguir son digitos y guiones bajos*/
+            estado_num=5;
             break;
 
         case 2: //sigue siendo un numero
@@ -224,6 +221,37 @@ void numerico() {
 
         case 5: //reconocer segunda parte de un float
 
+        do{
+                caracter = sigCaracter();
+               // printf("Caracter procesado %c\n",caracter);
+                //comprobamos que si el caracter es un _ que no hayan dos seguidos
+                if (caracter== '_'){
+                    caracter = sigCaracter();
+                    if (caracter == '_'){
+                        //TODO: Lanzar error de sintaxis y salimos del todo
+                        error = 1;
+
+                    }else{
+                        //en caso de que no se encuentren dos giones seguido retrocedemos el puntero
+                        retroceder();
+                    }
+                }
+
+            }while (isdigit(caracter) || (caracter == '_'));
+
+            /*Ahora debemos de comprobar que caracter fue el que nos saco ya que en funcion del tipo puede ser diferentes:*/
+
+            if (caracter == 'e' || caracter == 'E'){ //-Puede ser una e y ser un exponent float
+                /*Mandamos al automata que reconoce parte final de un exponencial*/
+                estado_num = 4;
+                
+            }else { //-Puede ser un delimitador y hay que aceptar la cadena y retroceder
+                //printf("Salí fuera con el caracter %c\n",caracter);
+                retroceder();
+                lexemaAceptadoConcodigo(NUMERO);
+                
+            }
+
 
 
 
@@ -297,7 +325,7 @@ void comentarios_strings(){
 
                 do{
                      caracter = sigCaracter();
-                     printf("Caracter procesado %c\n",caracter);
+                    // printf("Caracter procesado %c\n",caracter);
 
                 }while(caracter!='\n');
 
@@ -444,35 +472,36 @@ void otroTipo(){
         /*Casos de aceptacion directa de delimitadores y operadores*/
         
         case '(':
-            lexemaAceptadoConcodigo(PARENTESISABIERTO);  
+            lexemaAceptadoConcodigo('(');  
             break;
 
         case ')':
-            lexemaAceptadoConcodigo(PARENTESISCERRADO);
+            lexemaAceptadoConcodigo(')');
             break;
 
         case '[':
-            lexemaAceptadoConcodigo(CORCHETEABIERTO);
+            lexemaAceptadoConcodigo('[');
             break;
         
         case ']':
-            lexemaAceptadoConcodigo(CORCHETECERRADO);
+            lexemaAceptadoConcodigo(']');
             break;
         
         case '{':
-            lexemaAceptadoConcodigo(LLAVEABIERTA);
+            lexemaAceptadoConcodigo('{');
             break;
 
         case '}':
-            lexemaAceptadoConcodigo(LLAVECERRADA);
+            lexemaAceptadoConcodigo('}');
             break;
         
         case '~':
+            lexemaAceptadoConcodigo('~');
             
             break;
 
         case ',':
-            lexemaAceptadoConcodigo(COMA);
+            lexemaAceptadoConcodigo(',');
             break;
 
         case '.':
@@ -488,7 +517,7 @@ void otroTipo(){
             /*Si no es un numero lo siguiente aceptamos el delimitador*/
             }else{
                 retroceder();
-                lexemaAceptadoConcodigo(PUNTO);
+                lexemaAceptadoConcodigo('.');
             }
 
             
@@ -498,13 +527,13 @@ void otroTipo(){
             break;
 
         case ';':
-            lexemaAceptadoConcodigo(PUNTOCOMA);
+            lexemaAceptadoConcodigo(';');
             break;
 
         case '!':
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(DISTINTO);
             }else{
                 //TODO:lanzar error
             }
@@ -518,10 +547,10 @@ void otroTipo(){
             /*Puede ser o igual solo o igual igual*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(IGUALIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el igual
                 retroceder();
-                lexemaAceptadoConcodigo(IGUAL);
+                lexemaAceptadoConcodigo('=');
 
             }
             break;
@@ -530,10 +559,10 @@ void otroTipo(){
             /*Puede ser o : solo o :=*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(DOUSPUNTOSIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el :
                 retroceder();
-                lexemaAceptadoConcodigo(DOSPUNTOS);
+                lexemaAceptadoConcodigo(':');
 
             }
             break;
@@ -542,9 +571,11 @@ void otroTipo(){
             /*Puede ser o ^ solo o ^=*/
             caracter = sigCaracter();
             if (caracter == '='){
+                lexemaAceptadoConcodigo(EXPONENCIALIGUAL);
 
             }else{ //no es un igual, retrocedemos y devolvemos solo el ^
                 retroceder();
+                lexemaAceptadoConcodigo('^');
 
             }
             break;
@@ -553,10 +584,11 @@ void otroTipo(){
             /*Puede ser o | solo o |=*/
             caracter = sigCaracter();
             if (caracter == '='){
+                lexemaAceptadoConcodigo(BARRAVERTICALIGUAL);
 
             }else{ //no es un igual, retrocedemos y devolvemos solo el |
                 retroceder();
-
+                lexemaAceptadoConcodigo('|');
             }
             break;
 
@@ -564,10 +596,10 @@ void otroTipo(){
             /*Puede ser o & solo o &=*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(UNPERSANTIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el &
                 retroceder();
-
+                lexemaAceptadoConcodigo('&');
             }
             break;
 
@@ -575,9 +607,10 @@ void otroTipo(){
             /*Puede ser o @ solo o @=*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(ARROBAIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el @
                 retroceder();
+                lexemaAceptadoConcodigo('@');
 
             }
             break;
@@ -586,10 +619,10 @@ void otroTipo(){
             /*Puede ser o % solo o %=*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(PORCIENTOIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el %
                 retroceder();
-
+                lexemaAceptadoConcodigo('%');
             }
             break;
 
@@ -597,10 +630,10 @@ void otroTipo(){
             /*Puede ser o + solo o +=*/
             caracter = sigCaracter();
             if (caracter == '='){
-
+                lexemaAceptadoConcodigo(MASIGUAL);
             }else{ //no es un igual, retrocedemos y devolvemos solo el +
                 retroceder();
-
+                lexemaAceptadoConcodigo('+');
             }
             break;
 
@@ -614,11 +647,11 @@ void otroTipo(){
             break;
 
         case '/':
-            estado = 5;
+            estado = 7;
             break;
 
         case '*':
-            estado = 7;
+            estado = 5;
             break;
 
         case '-':
@@ -647,8 +680,6 @@ void otroTipo(){
             case 0: //se aceptan directamente
 
                 continue;
-
-
                 break;
 
             case 1: // se leyó >
@@ -662,12 +693,12 @@ void otroTipo(){
                         break;
                     
                     case '=': //>=
-
+                        lexemaAceptadoConcodigo(MAYORIGUAL);
                         break;
 
                     default: //solo es >
                         retroceder();
-
+                        lexemaAceptadoConcodigo('>');
                         break;
                 }
 
@@ -678,11 +709,11 @@ void otroTipo(){
                 caracter = sigCaracter();
 
                 if (caracter == '='){ //se leyo >>=
-
+                    lexemaAceptadoConcodigo(MAYORMAYORIGUAL);
                 }else{ //se leyo solo >>
                     retroceder();
+                    lexemaAceptadoConcodigo(MAYORMAYOR);
                 }
-
                 break;
 
 
@@ -697,12 +728,12 @@ void otroTipo(){
                         break;
                     
                     case '=': //<=
-
+                        lexemaAceptadoConcodigo(MENORIGUAL);
                         break;
 
                     default: //solo es <
                         retroceder();
-
+                        lexemaAceptadoConcodigo('<');
                         break;
                 }
                 
@@ -713,9 +744,10 @@ void otroTipo(){
                 caracter = sigCaracter();
 
                 if (caracter == '='){ //se leyo <<=
-
+                    lexemaAceptadoConcodigo(MENORMENORIGUAL);
                 }else{ //se leyo solo <<
                     retroceder();
+                    lexemaAceptadoConcodigo(MENORMENOR);
                 }
 
                 break;
@@ -730,12 +762,13 @@ void otroTipo(){
                         estado=4;
                         break;
                     
-                    case '=': //<=
-
+                    case '=': //*=
+                        lexemaAceptadoConcodigo(ASTERISCOIGUAL);
                         break;
 
                     default: //solo es *
                         retroceder();
+                        lexemaAceptadoConcodigo('*');
 
                         break;
                 }
@@ -747,9 +780,10 @@ void otroTipo(){
                 caracter = sigCaracter();
 
                 if (caracter == '='){ //se leyo **=
-
+                    lexemaAceptadoConcodigo(ASTERISCOASTERISCOIGUAL);
                 }else{ //se leyo solo **
                     retroceder();
+                    lexemaAceptadoConcodigo(ASTERICOASTERISCO);
                 }
 
                 break;
@@ -765,12 +799,12 @@ void otroTipo(){
                         break;
                     
                     case '=': // /=
-
+                        lexemaAceptadoConcodigo(BARRAIGUAL);
                         break;
 
                     default: //solo es /
                         retroceder();
-
+                        lexemaAceptadoConcodigo('/');
                         break;
                 }
                 
@@ -781,9 +815,10 @@ void otroTipo(){
                 caracter = sigCaracter();
 
                 if (caracter == '='){ //se leyo //=
-
+                    lexemaAceptadoConcodigo(BARRABARRAIGUAL);
                 }else{ //se leyo solo //
                     retroceder();
+                    lexemaAceptadoConcodigo(BARRABARRA);
                 }
 
                 break;
@@ -795,16 +830,17 @@ void otroTipo(){
             switch (caracter){
 
                 case '>': // ->
-
+                    lexemaAceptadoConcodigo(GUIONFLECHA);
                     break;
 
-                case '=': // =-
-
+                case '=': // -=
+                    lexemaAceptadoConcodigo(MENOSIGUAL);
                     break;
 
                 default: //solo es un -
 
                     retroceder();
+                    lexemaAceptadoConcodigo('-');
                     break;
             }
         }

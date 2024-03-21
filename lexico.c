@@ -292,9 +292,10 @@ void comentarios_strings(){
 
                 do{
                      caracter = sigCaracter();
-                     //printf("Caracter procesado %c\n",caracter);
+                     printf("Caracter procesado %c\n",caracter);
 
                 }while(caracter!='\n');
+
 
                 //retrocedemos para leer el '\n'
                 retroceder();
@@ -342,6 +343,7 @@ void comentarios_strings(){
                     caracter = sigCaracter();
                     //printf("Caracter procesado %c\n",caracter);
                     if (caracter == '"'){ //encontrado el string literal largo
+                        printf("estoy aqui\n");
                         lexemaAceptadoConcodigo(STRING);
                     }else{
                         estado = 1;
@@ -420,6 +422,7 @@ void comentarios_strings(){
 void otroTipo(){
 
     int estado = 0;
+    int caracteresIgnorar = 0;
 
 
     switch (caracter){
@@ -473,11 +476,16 @@ void otroTipo(){
 
             if (isdigit(caracter)){
                 /*Lo mandamos al automata numérico pero retrocedemos el puntero para enviarle el punto*/
+                retroceder();
                 numerico();
                 //TODO: hacer un break para que salga de aqui
+            /*Si no es un numero lo siguiente aceptamos el delimitador*/
+            }else{
+                retroceder();
+                lexemaAceptadoConcodigo(PUNTO);
             }
 
-            retroceder();
+            
 
     
             
@@ -611,14 +619,14 @@ void otroTipo(){
         
 
         default:
-                printf("Estoy aqui\n");
+                //printf("Estoy aqui\n");
                 saltarCaracter();
-                mostrarInicioYDelantero();      //      Está pensado para os \t, \n e espacios do código
+                //mostrarInicioYDelantero();      //      Está pensado para os \t, \n e espacios do código
                 if (caracter == '\n') {
                     linea++;
                 }
                 printf("Estamos en la linea %d\n",linea);
-                break;
+                caracteresIgnorar=1;
         
 
             break;
@@ -631,7 +639,7 @@ void otroTipo(){
 
             case 0: //se aceptan directamente
 
-                aceptado = 1;
+                continue;
 
 
                 break;
@@ -794,7 +802,9 @@ void otroTipo(){
             }
         }
         
-    }while (aceptado == 0);
+    }while (aceptado == 0 && caracteresIgnorar == 0);
+
+    caracteresIgnorar=0;
 
 }
 
@@ -802,54 +812,47 @@ void otroTipo(){
 
 compLexico sigCompLexico(){
 
-
-
   do{
-   
+
     caracter = sigCaracter();
     printf("Caracter leido %c\n",caracter);
-    mostrarInicioYDelantero();
-    //return caracter;
-
-    //si leo el /0 paso al siguiente caracter 
-
-    if (caracter == '\0') {
-
-    }else if (isdigit(caracter)){
-          numerico();
-        //en caso de ser identificador
-    }else if (isalpha(caracter) || caracter == '_'){
-          alfanumerico();
-    }else{
-            //en caso de que sea cualquier otra cosa
-        otroTipo();
-    }
     
+
+    //si leo el /0 o el EOF paso al siguiente caracter 
+
+    if (caracter != '\0' && caracter != EOF) {
+
+        if (isdigit(caracter)){
+            numerico();
+            //en caso de ser identificador
+        }else if (isalpha(caracter) || caracter == '_'){
+            alfanumerico();
+        }else{
+                //en caso de que sea cualquier otra cosa
+            otroTipo();
+        }
+    }
  //primer caracter leido redirigimos a automas principales
+
+    //printf("Saliendo porque caracter es %c y aceptado es %d\n",caracter,aceptado);
     
     
   } while (caracter != EOF && aceptado==0);
 
-  if (caracter == EOF){
+  //printf("Salí de donde estaba y el caracter es %c\n",caracter);
 
-        /*Si es el EOF lo indicamos y finalizamos el analisis*/
-                     
+  if (caracter == EOF && aceptado == 0){
+
+        /*Si es el EOF lo indicamos y finalizamos el analisis*/ 
         comp.lexema = NULL;
         comp.codigo = EOF;
                            
   }
 
-
   //printf("Componente Aceptado\n");
   aceptado = 0;
   //printf("Aceptado es %d\n",aceptado);
 
-
-
   return comp;
 
-
-
-  
-  
 }

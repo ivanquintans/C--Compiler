@@ -6,14 +6,16 @@
 #include "lexico.h"
 #include "sistemaEntrada.h"
 #include "TS.h"
+#include "errores.h"
 
 char caracter = ' ';
 int aceptado = 0; //valor por defecto que determina que no esta aceptada la cadena
 int linea=1; //valor que nos permite lanzar errores de una manera exitosa
 compLexico comp = {0, NULL};
 
-/*Funcion encargada de aceptar el lexema actual*/
 
+
+/*Funcion encargada de aceptar el lexema actual*/
 void lexemaAceptadoConcodigo(int codigo_componente){
 
     aceptarLexema(&comp,0);
@@ -125,7 +127,6 @@ void numerico() {
                 if (caracter== '_'){
                     caracter = sigCaracter();
                     if (caracter == '_'){
-                        //TODO: Lanzar error de sintaxis y salimos del todo
                         error = 1;
 
                     }else{
@@ -165,7 +166,6 @@ void numerico() {
                 if (caracter== '_'){
                     caracter = sigCaracter();
                     if (caracter == '_'){
-                        //TODO: Lanzar error de sintaxis y salimos del todo
                         error = 1;
 
                     }else{
@@ -317,13 +317,11 @@ void comentarios_strings(){
                 
             }else{
                 /*Dos comillas seguidas de un caracter diferente, string vacio*/
-                 //TODO: dos comillas tiene que reconocerse como string
                 estado = 4;
             }
             estado = 1; //compramos si viene otra comilla
         }else{ 
             /*Llevamos una comilla seguida de un caracter diferente (posible string)*/
-            //TODO: una comilla solo tambien tiene que procesarlo el automata de strings
             estado=3; //estado no aceptado
             //puede que sea un string
         }
@@ -341,13 +339,11 @@ void comentarios_strings(){
                 
             }else{
                 /*Dos comillas seguidas de un caracter diferente, string vacio*/
-                 //TODO: dos comillas tiene que reconocerse como string
                 estado = 8;
             }
             estado = 5; //compramos si viene otra comilla
         }else{ 
             /*Llevamos una comilla seguida de un caracter diferente (posible string)*/
-            //TODO: una comilla solo tambien tiene que procesarlo el automata de strings
             estado=7; //estado no aceptado
             //puede que sea un string
         }
@@ -456,7 +452,7 @@ void comentarios_strings(){
                     /*Una vez pillado el siguiente caracter seguimos en el mismo automata esperando la comilla*/
     
                 }else{ //es un eof
-                    printf("Error no se ha cerrado el comentario multilinea");
+                    imprimirError(COMENTARIO_MULTILINEA_NO_CERRADO);
                     error = 1;
                 }
 

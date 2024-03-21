@@ -38,7 +38,6 @@
 < 335 , yield >
 
 ---- FIN TABLA DE SIMBOLOS ----
-Estoy donde el tamaño es mayor
 < 370, 015
 """ >
 < 304, import >
@@ -114,7 +113,6 @@ Estoy donde el tamaño es mayor
 < 370, .05 >
 < 41, ) >
 < 58, : >
-Estoy donde el tamaño es mayor
 < 370, """ >
 < 300, N >
 < 61, = >
@@ -443,7 +441,6 @@ Estoy donde el tamaño es mayor
 < 93, ] >
 < 58, : >
 < 300, print >
-Estoy donde el tamaño es mayor
 < 370, "' >
 Saliendo del programa
 

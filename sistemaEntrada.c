@@ -5,6 +5,7 @@
 #include "sistemaEntrada.h"
 #include "lexico.h"
 #include "definiciones.h"
+#include "errores.h"
 #define TAM 16
 FILE *archivo;
 char caracter_actual;
@@ -94,7 +95,7 @@ void iniciarSistemaEntrada(char *fichero){
 
     // comprobamos que este se abre de forma correcta
     if (archivo == NULL){
-        printf("Error a  la hora de abrir er archivo\n");
+        imprimirError(ERROR_ABRIR_ARCHIVO);
         exit(EXIT_FAILURE);
     }
     //dejamos el fichero abierto
@@ -358,7 +359,8 @@ void aceptarLexema(compLexico *compActual, int identifcador){
         }
 
     }else{
-        printf("Estoy donde el tamaño es mayor\n");
+
+        imprimirError(TAM_LEXEMA_EXCEDIDO);
 
         if (identifcador == 1){ //en caso de que sea un identificador
             //ponemos el codigo a null ya que esto permite no insertar el elemento en la tabla de simbolos

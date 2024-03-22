@@ -16,8 +16,7 @@ typedef struct {
     int inicio;
     int delantero;
     int current; //Si 0 A sino B
-    int no_cargar;
-    //posible solucion para controlar el tam del lexema
+    int no_cargar; // se encarga de no cargar el  buffer cuando se haya retrocedido justo al anterior
     int tamLexemaActual; //se aumenta cada vez que se actualiza el valor de delantero
 }Buffer;
 
@@ -34,57 +33,41 @@ void incializarBuffer(){
 
 //cargamos el primero de los bloques
 void cargarBloque(){
-    //en funcion de cual sea el current cargamos el bloque a o el bloque b
+   
 
     int leidos; //variable que controla los bytes leidos por fread
     
-    if (miBuffer.current == 0){
-         //si estamos en el bloque A
-
+    if (miBuffer.current == 0){ //A
+         
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
         if ((leidos = fread(miBuffer.A,sizeof(char),TAM-1,archivo))< TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
             miBuffer.A[leidos] = EOF;
-
         }
-
         //ahora añadimos el EOF
         miBuffer.A[TAM -1] = '\0';
-
-        //for(int i=0;i<TAM;i++) printf(" BLOQUE A: Esta es la posicion %d %c\n",i,miBuffer.A[i]);
     
-    }else{ //Si estamos en el bloque b
+    }else{ //B
 
         //comprobamos para saber si estamos en el eof si el numero de bytes recibidos es menor al tamaño
         if ((leidos = fread(miBuffer.B,sizeof(char),TAM-1,archivo)) < TAM-1){
             /*Si se cumple la condición añadimos el EOF en el buffer*/
-            //printf("Estoy Aqui\n");
-            //printf("Leidos es %d\n",leidos);
             miBuffer.B[leidos] = EOF;
-
         }
         miBuffer.B[TAM -1] = '\0';
-        //for(int i=0;i<TAM;i++) printf("BLOQUE B:Esta es la posicion %d %c\n",i,miBuffer.B[i]);
-
-
   }
   
 }
 
 //funcion para alternar el bloque en caso de querer cambiarlo
-
 void alternarBloque(){
 
-    if (miBuffer.current==0){ //Si es a
-        //printf("Estoy cambiando a B\n");
+    if (miBuffer.current==0){ //A
         miBuffer.current=1;
-    }else{
+    }else{ //B
         miBuffer.current=0;
-        miBuffer.delantero=0;
-        //printf("Estoy cambiando a A\n");
-         //Devolvemos el puntero delantero al inicio del primer buffer
+        miBuffer.delantero=0; //Devolvemos el puntero delantero al inicio del primer buffer
     } 
-
 }
 
 
@@ -100,7 +83,7 @@ void iniciarSistemaEntrada(char *fichero){
     }
     //dejamos el fichero abierto
 
-     //llamamos a inicilizar el buffer
+    //llamamos a inicilizar el buffer
     incializarBuffer();
     cargarBloque();
 
@@ -109,13 +92,10 @@ void iniciarSistemaEntrada(char *fichero){
 // funcion que se encarga de cerrar el archivo
 void finalizarSistemaEntrada(){
     fclose(archivo);
-
 }
 
 // funcion que se encarga de enviar un caracter al analizadorlexico
 char sigCaracter(){
-    //debemos de diferenciar si estamos en el buffer a o en el b
-    //printf("Delantero esta en %d\n",miBuffer.delantero);
 
     if (miBuffer.current==0){//A
 
@@ -129,33 +109,27 @@ char sigCaracter(){
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
         if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
-            if (caracter_actual!= '\0'){ //si    
+            if (caracter_actual!= '\0'){ 
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
-                /*En el caso de que vengamos de retroceder en el buffer*/
                 alternarBloque();
-                if(miBuffer.no_cargar == 0){
-                    //printf("Estoy Aqui\n");
+                if(miBuffer.no_cargar == 0){ /*En el caso de que no vengamos de retroceder en el buffer*/
                     cargarBloque();
                 }
                 /*Devolvemos el valor para que se cargue*/
                 miBuffer.no_cargar=0;
                 /*Reajustamos el valor a devolver*/
                 miBuffer.delantero++;
-                //miBuffer.tamLexemaActual++;
-                caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //16 - 16
+                caracter_actual = miBuffer.B[miBuffer.delantero - TAM];
                 return caracter_actual;
-                
             }
 
         }else{
-            //final del archivo tengo que acabar de leer lo que esta en el buffer antes de retornar el eof
-
-    
             return EOF; //devuelvo el EOF del archivo
         }
 
-    }else{
+    }else{ //B
+
         miBuffer.delantero++;
         miBuffer.tamLexemaActual++;
         caracter_actual = miBuffer.B[miBuffer.delantero - TAM]; //sirve para modular el segundo buffer
@@ -164,7 +138,7 @@ char sigCaracter(){
         que el tamaño de bytes recibidos en el fread sea menor que los bytes recibidos */
 
         if (caracter_actual!= EOF){ //Si no se llego al fin de fichero
-            if (caracter_actual!= '\0'){ //si 
+            if (caracter_actual!= '\0'){ 
                 return caracter_actual;
             }else{ //en caso de ser el EOF del buffer
                 alternarBloque();
@@ -180,11 +154,9 @@ char sigCaracter(){
             }
         }else{
             //final del archivo de verdad
-            return EOF; //devuelvo el EOF del archivoff
+            return EOF; //devuelvo el EOF del archivo
         }
     }
-
-    
 }
 
 void retroceder(){
@@ -243,9 +215,6 @@ void saltarLexema() {
 
 void saltarCaracter(){
 
-    //printf("Mi buffer inicio es %d y mibuffer delantero es %d\n",miBuffer.inicio,miBuffer.delantero);
-
-
     if (miBuffer.current == 0) {  // Si estamos en el buffer a
 
         if (miBuffer.delantero == (TAM -2)){ //si estamos en la penultima posicion del buffer a saltamos dos posiciones y cambiamos el bloque activo
@@ -274,32 +243,18 @@ void saltarCaracter(){
         }else{
             miBuffer.inicio++;
         }
-        
     }
-
      /*Si saltamos un lexema reseteamos el valor de lexema*/
     miBuffer.tamLexemaActual=0;
    
 }
 
-void mostrarInicioYDelantero(){
-    printf("El valor de el puntero inicio después de leer es %d\n",miBuffer.inicio);
-    printf("El valor de el puntero delantero después de leer es %d\n",miBuffer.delantero);
-}
-
-
 void aceptarLexema(compLexico *compActual, int identifcador){
-
-    //TODO: REHACER Y COMPROBAR LOS IFS DE  LOS CASOS AISLADOSj
 
     int tamLexema=0;
 
-    //printf("El tamaño del lexema actual es de %d\n",miBuffer.tamLexemaActual);
+    if (miBuffer.tamLexemaActual <= (TAM -1)){ 
 
-
-    if (miBuffer.tamLexemaActual <= (TAM -1)){ //si el tamaño del lexema es menor que 15 o igual
-
-        //varios casos posibles
 
         //En caso de que el inicio y el fin esten en a o en b
         if( (miBuffer.delantero < TAM -1 && miBuffer.inicio < TAM -1) || (miBuffer.delantero > TAM -1 && miBuffer.inicio > TAM -1)){
@@ -310,8 +265,6 @@ void aceptarLexema(compLexico *compActual, int identifcador){
             //hacemos la copia en el lexema del buffer que queremos
             //mas la posición inicio para asi empezar desde donde queremos
 
-            //printf("Mi buffer inicio es %d y mibuffer delantero es %d\n",miBuffer.inicio,miBuffer.delantero);
-
             if (miBuffer.current == 0){
                 strncpy(compActual->lexema, miBuffer.A + miBuffer.inicio, tamLexema); //ponemos miBuffer.A + miBuffer.inicio para evitar warnings (aritmetica de punteros)
                 compActual->lexema[tamLexema] = '\0'; //evitar errores
@@ -319,6 +272,7 @@ void aceptarLexema(compLexico *compActual, int identifcador){
                 strncpy(compActual->lexema, miBuffer.B + miBuffer.inicio - TAM, tamLexema);
                 compActual->lexema[tamLexema] = '\0'; //evitar errores
             }
+
         //Inicio en A y delantero en B
         }else if(miBuffer.inicio < TAM -1 && miBuffer.delantero > TAM -1){
 
@@ -340,8 +294,6 @@ void aceptarLexema(compLexico *compActual, int identifcador){
         //Inicio en B y delantero en A
         }else if(miBuffer.inicio > TAM -1 && miBuffer.delantero < TAM -1){
 
-            //printf("Entre aqui xd\n");
-
             int tamPrimeraparte = ((2 * TAM -2)- miBuffer.inicio)+1;
             int tamSegundaparte = (miBuffer.delantero)+1;
 
@@ -359,7 +311,8 @@ void aceptarLexema(compLexico *compActual, int identifcador){
         }
 
     }else{
-
+        
+        //imprimos el error en caso de que el tamano sea mayor
         imprimirError(TAM_LEXEMA_EXCEDIDO);
 
         if (identifcador == 1){ //en caso de que sea un identificador
@@ -372,25 +325,47 @@ void aceptarLexema(compLexico *compActual, int identifcador){
         
         /*Si delantero esta en el buffer A imprimimos la partde del buffer a hasta delantero*/
         if (miBuffer.delantero < TAM -1){
-            /*Si estoy en el buffer a imprimimos des*/
-
+            
             /*Además debemos comprobar que no se este devolviendo 0 caracteter*/
-        
+
+            //si solo devolvemos un caracter devolvemos el buffer anterior
             tamLexema = miBuffer.delantero +1;
-            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
-            strncpy(compActual->lexema, miBuffer.A, tamLexema); 
-            compActual->lexema[tamLexema] = '\0'; //evitar errores
+
+            if (tamLexema <= 1){ //devolvemos el otro buffer
+
+                tamLexema = TAM -1; //tamaño máximo
+                compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+                strncpy(compActual->lexema, miBuffer.B, tamLexema); 
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
+                
+            }else{
+                compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+                strncpy(compActual->lexema, miBuffer.A, tamLexema); 
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
+            }
+           
 
         //si delantero esta en el buffer b lo contrario    
         }else {
-            
+
             tamLexema = (miBuffer.delantero - TAM)+1;
-            compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
-            strncpy(compActual->lexema, miBuffer.B, tamLexema);
-            compActual->lexema[tamLexema] = '\0'; //evitar errores
+
+            if (tamLexema <= 1){ //devolvemos el otro buffer
+
+                tamLexema = TAM -1; //tamaño máximo
+                compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+                strncpy(compActual->lexema, miBuffer.A, tamLexema); 
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
+
+             }else{
+                compActual->lexema = malloc (tamLexema +1);//reservamos memoria para el lexama mas el '\0'
+                strncpy(compActual->lexema, miBuffer.B, tamLexema);
+                compActual->lexema[tamLexema] = '\0'; //evitar errores
+
+             }   
+            
         }
     }   
-
     //una vez aceptado el lexema debemos de saltarlo
     saltarLexema();
 }
